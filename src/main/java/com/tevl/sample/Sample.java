@@ -24,6 +24,7 @@ public class Sample {
     public static void main(String[] args) {
 
         InMemoryDataSource dataSource = new InMemoryDataSource();
+        //TODO this looks a bit weird, the same value being passed in two params, why not just one input
         DatasourceProvider datasourceProvider = new DatasourceProvider(dataSource, dataSource);
 
         TimeseriesDataset<Number> aVariableDataset = new DefaultTimeseriesDataset<>();
