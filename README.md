@@ -1,3 +1,4 @@
+*WIP*
 # Project Title
 
 An expression evaluator that can evaluate time series datasets
@@ -11,19 +12,19 @@ where TS is the timestamp and val is the corresponding value. val is of type jav
 
 ## Getting Started
 
-###Features
+### Features
 * Support for parsing and evaluation of expressions containing functions
 * Support for resolving time series dataset inputs from an external datasource such as JDBC
 * Support for adding new custom functions
 * Support for different evaluation strategies involving inputs such as extrapolation of missing values, 
 downsampling of values to a certain interval 
 
-###Usage
+### Usage
 
 Refer to the class com.tsexpval.sample.Sample under sources to understand how to use the library to evaluate an
 expresion with time series datasets.
 
-####Step by step walkthrough
+#### Step by step walkthrough
 
 The code fragments below are extracted from com.tsexpval.sample.Sample. For full working code, refer to that class.
 
@@ -31,7 +32,7 @@ The code fragments below are extracted from com.tsexpval.sample.Sample. For full
 * Create an expression using SpelExpression. Specify the expression to be processed in the form of String.
 SpelExpression uses Spring EL internally. You can refer to the Spring EL library to understand the syntax of expressions supported.
 
-````
+````java
 SpelExpression expression = new SpelExpression("add(#A,add(#B,2))");
 
 ````
@@ -42,7 +43,7 @@ initialize with the appropriate datasource instances. There are two implementati
 
 Below code fragment uses an in memory datasource. You need to initialize it with data for all the variables defined in the expression.
 
-````
+````java
 InMemoryDataSource dataSource = new InMemoryDataSource();
 TimeseriesDataset<Number> aVariableDataset = new DefaultTimeseriesDataset<>();
 ...
@@ -59,7 +60,7 @@ DatasourceProvider datasourceProvider = new DatasourceProvider(dataSource, dataS
 ExpressionContextResolver resolves various elements such as variables defined in the expression and binds respective 
 values to the evaluation runtime
 
-````
+````java
 ExpressionContextResolver expressionContextResolver = new DefaultExpressionContextResolver(
         datasourceProvider);
 expression.setExpressionContextResolver(expressionContextResolver);
@@ -69,7 +70,7 @@ expression.setExpressionContextResolver(expressionContextResolver);
 * Finally, call the getValue of Expression to obtain the calculated value. You need to create an instance 
 of EvaluationContext. EvaluationContext can hold any additional metadata that may supplement the evaluation at runtime
 
-````
+````java
 Variable output = expression.getValue(evaluationContext);
 
 ````
@@ -90,7 +91,7 @@ The default behavior is to evaluate the expression for all the matching timestam
 
 It's a gradle project. You can check out the code and run gradlew.
 
-To run the sample, use ```exec``` target
+To run the sample, use `exec` target
 
 
 ## License
