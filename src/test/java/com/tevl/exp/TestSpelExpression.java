@@ -68,7 +68,7 @@ public class TestSpelExpression {
     @Test
     public void testTwoVariableFunctionExpression()
     {
-        String expression = "add(#A,#B)";
+        String expression = "#A + #B";
         SpelExpression spelExpression = new SpelExpression(expression);
         EvaluationContext evaluationContext = new StandardEvaluationContext();
 
@@ -120,7 +120,7 @@ public class TestSpelExpression {
         Variable value = spelExpression.getValue(evaluationContext);
         TimeseriesDataset<Number> outputDataset = value.getValue();
 
-        Assert.assertTrue(assertEquals(expectedDataset, outputDataset));
+        Assert.assertTrue(assertEquals(aVariableDataset, outputDataset));
 
     }
 

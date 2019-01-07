@@ -13,6 +13,7 @@ import java.util.function.BiFunction;
 
 public class BasicFunctionsPlugin extends FunctionPluginBase {
 
+    //TODO this is not thread safe
     private DecimalFormat decimalFormat = new DecimalFormat(".##########");
 
 
@@ -41,6 +42,7 @@ public class BasicFunctionsPlugin extends FunctionPluginBase {
     {
         return computeFunction(var1, var2,
                 (String p1Str,String p2Str) -> Long.parseLong(p1Str) + Long.parseLong(p2Str),
+                //TODO what's the point of converting to string and parsing again
                 (String p1Str,String p2Str) -> Double.parseDouble(
                         decimalFormat.format(Double.parseDouble(p1Str) + Double.parseDouble(p2Str))));
     }

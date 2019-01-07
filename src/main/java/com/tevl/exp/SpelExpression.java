@@ -6,6 +6,10 @@ import com.tevl.exp.eval.context.EvaluationContext;
 import com.tevl.exp.eval.context.binding.RuntimeBindingContext;
 import com.tevl.exp.eval.context.resolver.ExpressionContextResolver;
 import com.tevl.plugin.FunctionPluginRegistry;
+
+import org.springframework.expression.EvaluationException;
+import org.springframework.expression.Operation;
+import org.springframework.expression.OperatorOverloader;
 import org.springframework.expression.spel.SpelNode;
 import org.springframework.expression.spel.ast.VariableReference;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -15,7 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class SpelExpression extends Expression {
+public class SpelExpression extends Expression
+{
 
     private ExpressionContextResolver expressionContextResolver;
     private org.springframework.expression.Expression spelExpression;
@@ -29,7 +34,7 @@ public class SpelExpression extends Expression {
     {
         super(expressionString);
 
-        LOGGER.info("Processing expression "+ expressionString);
+        LOGGER.info("Processing expression " + expressionString);
         SpelExpressionParser expressionParser = new SpelExpressionParser();
         spelExpression = expressionParser.parseExpression(expressionString);
 
@@ -37,28 +42,27 @@ public class SpelExpression extends Expression {
 
         variables = new ArrayList<>();
         findVariablesRecursively(ast, variables);
-        LOGGER.info("Found variables in expression : "+variables);
+        LOGGER.info("Found variables in expression : " + variables);
     }
 
-    private static void findVariablesRecursively(SpelNode ast,List<String> variableNames)
+    private static void findVariablesRecursively(SpelNode ast, List<String> variableNames)
     {
         int childCount = ast.getChildCount();
-        if(ast instanceof VariableReference)
+        if (ast instanceof VariableReference)
         {
             String astName = ast.toStringAST();
-            variableNames.add(astName.substring(astName.indexOf("#")+1));
+            variableNames.add(astName.substring(astName.indexOf("#") + 1));
         }
-        if(childCount == 0)
+        if (childCount == 0)
         {
             return;
         }
 
-        for(int i = 0; i< childCount; i++)
+        for (int i = 0; i < childCount; i++)
         {
-            findVariablesRecursively(ast.getChild(i),variableNames);
+            findVariablesRecursively(ast.getChild(i), variableNames);
         }
     }
-
 
 
     public void setExpressionContextResolver(ExpressionContextResolver expressionContextResolver)
@@ -67,10 +71,12 @@ public class SpelExpression extends Expression {
     }
 
     @Override
-    public Variable getValue(EvaluationContext evaluationContext) {
+    public Variable getValue(EvaluationContext evaluationContext)
+    {
         RuntimeBindingContext bindingContext = expressionContextResolver.resolveContext(this, evaluationContext);
         SpringElEvaluationContext springElEvaluationContext = new SpringElEvaluationContext();
-        Map<String,Object> bindingVariables = bindingContext.getBindingVariables();
+        springElEvaluationContext.setOperatorOverloader(new CustomOperatorOverLoader());
+        Map<String, Object> bindingVariables = bindingContext.getBindingVariables();
         bindingVariables.forEach(springElEvaluationContext::setVariable);
         springElEvaluationContext.setRootObject(FunctionPluginRegistry.INSTANCE);
         springElEvaluationContext.setAdditionalContext(evaluationContext);
@@ -79,9 +85,51 @@ public class SpelExpression extends Expression {
     }
 
     @Override
-    public List<String> getVariables() {
+    public List<String> getVariables()
+    {
         return variables;
     }
 
+    private static final class CustomOperatorOverLoader implements OperatorOverloader
+    {
+        @Override
+        public boolean overridesOperation(Operation operation, Object leftOperand, Object rightOperand)
+                throws EvaluationException
+        {
+            if (leftOperand == null || rightOperand == null)
+            {
+                return false;
+            }
+            //TODO improve the check
+            //TODO you can also support Variable and number
+            return operation == Operation.ADD && Variable.class.isAssignableFrom(leftOperand.getClass())
+                    && Variable.class.isAssignableFrom(rightOperand.getClass());
+        }
 
+        @Override
+        public Object operate(Operation operation, Object leftOperand, Object rightOperand) throws EvaluationException
+        {
+            if (leftOperand == null || rightOperand == null)
+            {
+                return null;
+            }
+            switch (operation)
+            {
+                case ADD:
+                    //perform the actual operation
+                    return leftOperand;
+//                case SUBTRACT:
+//                    break;
+//                case DIVIDE:
+//                    break;
+//                case MULTIPLY:
+//                    break;
+//                case MODULUS:
+//                    break;
+//                case POWER:
+//                    break;
+            }
+            return null;
+        }
+    }
 }
