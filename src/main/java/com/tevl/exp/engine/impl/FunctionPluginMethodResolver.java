@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 public class FunctionPluginMethodResolver implements MethodResolver {
 
-    private Logger LOGGER = Logger.getLogger(FunctionPluginMethodResolver.class.getName());
+    private final Logger LOGGER = Logger.getLogger(FunctionPluginMethodResolver.class.getName());
 
     public FunctionPluginMethodResolver()
     {

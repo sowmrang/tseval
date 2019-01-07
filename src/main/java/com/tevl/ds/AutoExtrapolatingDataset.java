@@ -6,8 +6,8 @@ import java.util.Set;
 
 public class AutoExtrapolatingDataset<T> implements TimeseriesDataset<T> {
 
-    private TimeseriesDataset<T> underlyingDataset;
-    private ExtrapolationStrategy<T> extrapolationStrategy;
+    private final TimeseriesDataset<T> underlyingDataset;
+    private final ExtrapolationStrategy<T> extrapolationStrategy;
 
     public AutoExtrapolatingDataset(TimeseriesDataset<T> dataset, ExtrapolationStrategy<T> strategy)
     {

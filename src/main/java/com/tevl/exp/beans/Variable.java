@@ -1,14 +1,11 @@
 package com.tevl.exp.beans;
 
-import com.tevl.ds.AutoExtrapolatingDataset;
 import com.tevl.ds.DefaultTimeseriesDataset;
 import com.tevl.ds.TimeseriesDataset;
 
 public class Variable
 {
-
-
-    private String variableName;
+    private final String variableName;
     private TimeseriesDataset<Number> value = new DefaultTimeseriesDataset<>();
     private Number defaultValue;
 

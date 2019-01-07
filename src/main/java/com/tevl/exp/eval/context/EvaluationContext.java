@@ -7,7 +7,7 @@ public abstract class EvaluationContext
 
     private EvaluationConfig evaluationConfig = new EvaluationConfig();
 
-    public EvaluationContext()
+    protected EvaluationContext()
     {
     }
 

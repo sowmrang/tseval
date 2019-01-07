@@ -12,8 +12,8 @@ import java.lang.reflect.Method;
 
 public class CustomMethodExecutor implements MethodExecutor {
 
-    private Method method;
-    private FunctionPlugin functionPlugin;
+    private final Method method;
+    private final FunctionPlugin functionPlugin;
 
     public CustomMethodExecutor(String functionName,FunctionPlugin plugin)
     {
@@ -27,7 +27,7 @@ public class CustomMethodExecutor implements MethodExecutor {
     @Override
     public TypedValue execute(EvaluationContext context, Object target, Object... arguments) throws AccessException {
 
-        Object output = null;
+        Object output;
         try {
             for (int i = 0; i < arguments.length; i++) {
                 Object argument = arguments[i];

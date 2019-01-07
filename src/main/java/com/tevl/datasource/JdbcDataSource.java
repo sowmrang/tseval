@@ -2,17 +2,18 @@ package com.tevl.datasource;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import sun.util.resources.ga.LocaleNames_ga;
 
 import java.util.logging.Logger;
 
+//TODO if you do not intend to provide a solution, why even have this class
+//TODO and if you provide a solution then take javax.sql.DataSource as an input, do not build a datasource of your own.
 public abstract class JdbcDataSource implements DataSource {
 
-    private javax.sql.DataSource dataSource;
+    private final javax.sql.DataSource dataSource;
 
-    private static Logger LOGGER = Logger.getLogger(JdbcDataSource.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(JdbcDataSource.class.getName());
 
-    public JdbcDataSource(String username,char[] password,String jdbcUrl)
+    protected JdbcDataSource(String username, char[] password, String jdbcUrl)
     {
         LOGGER.info("Initializing hikari datasource with jdbc url "+jdbcUrl);
         HikariConfig config = new HikariConfig();

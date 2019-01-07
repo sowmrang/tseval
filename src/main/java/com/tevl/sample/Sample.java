@@ -16,9 +16,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.logging.Logger;
 
+//TODO move it to tests
 public class Sample {
 
-    private static Logger LOGGER = Logger.getLogger(Sample.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Sample.class.getName());
 
     public static void main(String[] args) {
 

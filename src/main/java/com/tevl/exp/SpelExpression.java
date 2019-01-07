@@ -18,11 +18,11 @@ import java.util.logging.Logger;
 public class SpelExpression extends Expression {
 
     private ExpressionContextResolver expressionContextResolver;
-    private org.springframework.expression.Expression spelExpression;
+    private final org.springframework.expression.Expression spelExpression;
 
-    private List<String> variables;
+    private final List<String> variables;
 
-    private static Logger LOGGER = Logger.getLogger(SpelExpression.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(SpelExpression.class.getName());
 
 
     public SpelExpression(String expressionString)
@@ -46,7 +46,7 @@ public class SpelExpression extends Expression {
         if(ast instanceof VariableReference)
         {
             String astName = ast.toStringAST();
-            variableNames.add(astName.substring(astName.indexOf("#")+1));
+            variableNames.add(astName.substring(astName.indexOf('#')+1));
         }
         if(childCount == 0)
         {

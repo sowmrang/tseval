@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class DefaultVariableResolver implements VariableResolver {
 
-    private DatasourceProvider dataSourceProvider;
+    private final DatasourceProvider dataSourceProvider;
 
     public DefaultVariableResolver(DatasourceProvider dataSourceProvider)
     {
@@ -23,6 +23,7 @@ public class DefaultVariableResolver implements VariableResolver {
     public List<Variable> resolveVariable(String variableName, EvaluationContext evaluationContext) {
         DataSource runtimeDatasource = dataSourceProvider.getRuntimeDatasource();
         Map<String,TimeseriesDataset<Number>> parameterData =
+                //TODO unchecked cast
                 (Map<String,TimeseriesDataset<Number>>)runtimeDatasource.getParameterData(variableName);
         Variable variable = new Variable(variableName);
         TimeseriesDataset<Number> value = parameterData.get(variableName);

@@ -6,7 +6,7 @@ public abstract class ExpressionContextResolverBase implements ExpressionContext
 
     protected DatasourceProvider datasourceProvider;
 
-    public ExpressionContextResolverBase(DatasourceProvider datasourceProvider)
+    protected ExpressionContextResolverBase(DatasourceProvider datasourceProvider)
     {
         this.datasourceProvider = datasourceProvider;
     }

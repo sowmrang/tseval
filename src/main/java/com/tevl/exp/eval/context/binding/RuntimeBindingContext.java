@@ -9,7 +9,7 @@ import java.util.Map;
 
 public abstract class RuntimeBindingContext
 {
-    private Map<String,Object> variables = new HashMap<>();
+    private final Map<String,Object> variables = new HashMap<>();
     private EvaluationContext evaluationContext;
 
     public void addVariable(String variableName,Variable variable)

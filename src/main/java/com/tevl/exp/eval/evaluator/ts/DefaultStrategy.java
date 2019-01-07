@@ -16,7 +16,6 @@ public class DefaultStrategy {
         for (int i = 0; i < inputs.length; i++) {
             Variable input = inputs[i];
             TimeseriesDataset<Number> value = input.getValue();
-            System.out.println("value = " + value);
             if(value != null && !value.getTimestampSeries().isEmpty()) {
 
                 if (minDatasetSize < value.size()) {
