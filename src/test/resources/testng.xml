@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="default">
+    <test name="default">
+        <classes>
+            <class name="com.tsexpval.exp.TestSpelExpression"/>
+        </classes>
+    </test>
+</suite>
