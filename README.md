@@ -21,12 +21,12 @@ downsampling of values to a certain interval
 
 ### Usage
 
-Refer to the class com.tsexpval.sample.Sample under sources to understand how to use the library to evaluate an
+Refer to the class com.tevl.sample.Sample under sources to understand how to use the library to evaluate an
 expresion with time series datasets.
 
 #### Step by step walkthrough
 
-The code fragments below are extracted from com.tsexpval.sample.Sample. For full working code, refer to that class.
+The code fragments below are extracted from com.tevl.sample.Sample. For full working code, refer to that class.
 
 
 * Create an expression using SpelExpression. Specify the expression to be processed in the form of String.

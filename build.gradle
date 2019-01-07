@@ -17,7 +17,7 @@ dependencies {
 
 task execute(type:JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    main = 'com.tsexpval.sample.Sample'
+    main = 'com.tevl.sample.Sample'
 }
 
 test {
