@@ -70,6 +70,25 @@ public class TestSpelExpression {
         Assert.assertTrue(assertEquals(expectedDataset, outputDataset));
     }
 
+    //TODO provide meaningful handling of this case
+    @Test
+    public void testMissingExpression()
+    {
+        String expression = "add(#X,2)";
+        SpelExpression spelExpression = new SpelExpression(expression);
+        EvaluationContext evaluationContext = new StandardEvaluationContext();
+
+        InMemoryDataSource dataSource = new InMemoryDataSource();
+
+
+        DatasourceProvider datasourceProvider = new DatasourceProvider(dataSource, dataSource);
+        ExpressionContextResolver contextResolver = new DefaultExpressionContextResolver(datasourceProvider);
+
+        spelExpression.setExpressionContextResolver(contextResolver);
+        spelExpression.getValue(evaluationContext);
+        Assert.fail();
+    }
+
     @Test
     public void testMultiply()
     {
