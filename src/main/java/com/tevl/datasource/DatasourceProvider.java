@@ -5,10 +5,10 @@ import java.util.logging.Logger;
 
 public final class DatasourceProvider {
 
-    private DataSource configDatasource;
-    private DataSource runtimeDatasource;
+    private final DataSource configDatasource;
+    private final DataSource runtimeDatasource;
 
-    private static Logger LOGGER = Logger.getLogger(DatasourceProvider.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(DatasourceProvider.class.getName());
 
     public DatasourceProvider(DataSource configDatasource,DataSource runtimeDatasource)
     {
@@ -21,6 +21,7 @@ public final class DatasourceProvider {
         this.runtimeDatasource = runtimeDatasource;
     }
 
+    //TODO what is this method for
     public DataSource getConfigDatasource() {
         return configDatasource;
     }

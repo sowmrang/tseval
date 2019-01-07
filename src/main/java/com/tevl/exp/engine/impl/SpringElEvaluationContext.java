@@ -10,7 +10,7 @@ import java.util.List;
 public class SpringElEvaluationContext extends StandardEvaluationContext
 {
 
-    private List<MethodResolver> methodResolvers = new ArrayList<>(1);
+    private final List<MethodResolver> methodResolvers = new ArrayList<>(1);
 
     private EvaluationContext additionalContext;
 

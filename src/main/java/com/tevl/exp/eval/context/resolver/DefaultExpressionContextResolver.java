@@ -13,7 +13,7 @@ import java.util.List;
 
 public class DefaultExpressionContextResolver extends ExpressionContextResolverBase
 {
-    private VariableResolver variableResolver;
+    private final VariableResolver variableResolver;
 
     public DefaultExpressionContextResolver(DatasourceProvider datasourceProvider)
     {

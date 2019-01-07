@@ -3,14 +3,13 @@ package com.tevl.exp.eval.evaluator.ts;
 import com.tevl.ds.TimeseriesDataset;
 import com.tevl.exp.beans.Variable;
 import com.tevl.exp.eval.EvaluationConfig;
-import sun.rmi.runtime.Log;
 
 import java.util.function.BiFunction;
 import java.util.logging.Logger;
 
 public class TSFunctionEvaluator {
 
-    private static Logger LOGGER = Logger.getLogger(TSFunctionEvaluator.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(TSFunctionEvaluator.class.getName());
 
     public TimeseriesDataset<Number> evaluateWithBiNumberFunction(
             Variable[] parametersDataset, BiFunction<Number,Number,Number> method, EvaluationConfig evaluationConfig)

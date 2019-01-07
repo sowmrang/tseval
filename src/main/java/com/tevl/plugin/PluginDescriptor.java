@@ -8,7 +8,7 @@ public class PluginDescriptor {
 
     private Map<String,Method> supportedFunctions;
     private String pluginName;
-    private String className;
+    private final String className;
 
     public PluginDescriptor(String className)
     {

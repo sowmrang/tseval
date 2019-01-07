@@ -13,7 +13,7 @@ import java.util.function.BiFunction;
 
 public class BasicFunctionsPlugin extends FunctionPluginBase {
 
-    private DecimalFormat decimalFormat = new DecimalFormat(".##########");
+    private final DecimalFormat decimalFormat = new DecimalFormat(".##########");
 
 
     @Override
@@ -32,6 +32,7 @@ public class BasicFunctionsPlugin extends FunctionPluginBase {
             descriptor.setPluginName(BasicFunctionsPlugin.class.getName());
             descriptor.setSupportedFunctions(functions);
         } catch (NoSuchMethodException e) {
+            //TODO handle better
             e.printStackTrace();
         }
         return descriptor;
@@ -99,7 +100,7 @@ public class BasicFunctionsPlugin extends FunctionPluginBase {
     }
 
 
-    private boolean isNotAnInteger(String var1Str, String var2Str) {
+    private static boolean isNotAnInteger(String var1Str, String var2Str) {
         boolean notanInteger = false;
         try {
             Long.parseLong(var1Str);

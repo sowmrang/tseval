@@ -1,9 +1,11 @@
+//TODO why not name your package com.sowmrang.oss.tseval
 group 'com.sowmrang.oss'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
@@ -12,6 +14,7 @@ repositories {
 dependencies {
     testCompile group: 'org.testng', name: 'testng', version: '6.14.3'
     compile group: 'org.springframework', name: 'spring-expression', version: '5.0.2.RELEASE'
+    //TODO remove this dependency
     compile group: 'com.zaxxer', name: 'HikariCP', version: '2.7.8'
 }
 

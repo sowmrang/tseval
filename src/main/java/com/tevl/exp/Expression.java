@@ -9,7 +9,7 @@ public abstract class Expression {
 
     protected String expressionString;
 
-    public Expression(String expressionString)
+    protected Expression(String expressionString)
     {
         this.expressionString = expressionString;
     }

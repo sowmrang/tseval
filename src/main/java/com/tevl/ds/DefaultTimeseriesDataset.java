@@ -2,12 +2,13 @@ package com.tevl.ds;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeMap;
 
 public class DefaultTimeseriesDataset<T> implements TimeseriesDataset<T> {
 
-    private TreeMap<Long,T> tsDataset = new TreeMap<>();
+    private final NavigableMap<Long,T> tsDataset = new TreeMap<>();
 
     public DefaultTimeseriesDataset()
     {
@@ -41,7 +42,7 @@ public class DefaultTimeseriesDataset<T> implements TimeseriesDataset<T> {
 
     public String toString()
     {
-        StringBuilder outputBuffer = new StringBuilder();
+        StringBuilder outputBuffer = new StringBuilder(100);
         for (Long key : tsDataset.keySet()) {
             outputBuffer.append(key).append(" -> ").append(tsDataset.get(key)).append("\n");
         }

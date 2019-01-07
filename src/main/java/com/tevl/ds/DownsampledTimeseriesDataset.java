@@ -2,8 +2,8 @@ package com.tevl.ds;
 
 import java.util.Set;
 
+//TODO no implementation
 public class DownsampledTimeseriesDataset<T> implements TimeseriesDataset<T> {
-
 
 
     public DownsampledTimeseriesDataset(long downsamplingFrequency,TimeseriesDataset<T> underlyingdataset)

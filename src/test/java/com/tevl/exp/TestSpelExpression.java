@@ -22,6 +22,9 @@ public class TestSpelExpression {
     @Test
     public void testBasicExpression()
     {
+        //TODO don't you think, one has to do too many things to evaluate this simple expression.
+        //what if you had something like Expression.builder("add(#A,2)").withTSDataset("A", aVariableDataset).evaluate()
+        //everything else is hidden in the builder.
         String expression = "add(#A,2)";
         SpelExpression spelExpression = new SpelExpression(expression);
         EvaluationContext evaluationContext = new StandardEvaluationContext();
@@ -59,6 +62,7 @@ public class TestSpelExpression {
         ExpressionContextResolver contextResolver = new DefaultExpressionContextResolver(datasourceProvider);
 
         spelExpression.setExpressionContextResolver(contextResolver);
+        //TODO what is the purpose of return a variable instead of TimeseriesDataset directly
         Variable value = spelExpression.getValue(evaluationContext);
         TimeseriesDataset<Number> outputDataset = value.getValue();
 
@@ -220,7 +224,7 @@ public class TestSpelExpression {
     }
 
 
-    private boolean assertEquals(TimeseriesDataset<Number> ds1,TimeseriesDataset<Number> ds2) {
+    private static boolean assertEquals(TimeseriesDataset<Number> ds1, TimeseriesDataset<Number> ds2) {
         if (ds1 == null || ds2 == null) {
             return false;
         }
