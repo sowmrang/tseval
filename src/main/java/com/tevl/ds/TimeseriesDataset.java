@@ -7,6 +7,7 @@ import java.util.Set;
 //TODO why use generics, why not Number or better Double or event better double
 public interface TimeseriesDataset<V>
 {
+    //TODO try to make timeseries immutable
     public V addValue(long timestamp, V value);
 
     public V getValue(long timestamp);
