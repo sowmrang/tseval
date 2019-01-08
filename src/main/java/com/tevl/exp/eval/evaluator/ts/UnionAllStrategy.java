@@ -1,9 +1,9 @@
 package com.tevl.exp.eval.evaluator.ts;
 
-import com.tevl.ds.DefaultTimeseriesDataset;
 import com.tevl.ds.TimeseriesDataset;
 import com.tevl.exp.beans.Variable;
 
+import java.util.Collections;
 import java.util.function.BiFunction;
 
 public class UnionAllStrategy {
@@ -11,7 +11,7 @@ public class UnionAllStrategy {
     public TimeseriesDataset<Number> evaluateWithBiNumberFunction(Variable[] inputs,
                                                                   BiFunction<Number,Number,Number> functionPluginMethod)
     {
-        TimeseriesDataset<Number> outputDataset = new DefaultTimeseriesDataset<>();
+        TimeseriesDataset<Number> outputDataset =  TimeseriesDataset.Builder.<Number>instance().build();
         Number[] parameterValues = new Number[2];
         for (int i = 0; i < inputs.length; i++) {
             TimeseriesDataset<Number> tsInput = inputs[i].getValue();
@@ -27,6 +27,8 @@ public class UnionAllStrategy {
                     parameterValues[0] = (secondParameterTimeSeries == null ||
                             secondParameterTimeSeries.getValue(timestamp) == null) ?
                             inputs[1].getDefaultValue() : secondParameterTimeSeries.getValue(timestamp);
+                    System.out.println("parameterValues = " + parameterValues[0]);
+                    System.out.println("parameterValues = " + parameterValues[1]);
                     if(parameterValues[0] != null && parameterValues[1] != null)
                     {
                         outputDataset.addValue(timestamp,

@@ -23,8 +23,7 @@ public class DefaultVariableResolver implements VariableResolver {
     public List<Variable> resolveVariable(String variableName, EvaluationContext evaluationContext) {
         DataSource runtimeDatasource = dataSourceProvider.getRuntimeDatasource();
         Map<String,TimeseriesDataset<Number>> parameterData =
-                //TODO unchecked cast
-                (Map<String,TimeseriesDataset<Number>>)runtimeDatasource.getParameterData(variableName);
+                runtimeDatasource.getParametersData(variableName);
         Variable variable = new Variable(variableName);
         TimeseriesDataset<Number> value = parameterData.get(variableName);
         variable.setValue(value);

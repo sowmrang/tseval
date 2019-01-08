@@ -17,17 +17,13 @@ public class InMemoryDataSource implements DataSource {
 
 
     @Override
-    public Object getParameterData(String parameter) {
-        return getParametersData(new String[]{parameter});
-    }
-
-    @Override
-    public Object getParametersData(String[] parameters) {
+    public Map<String,TimeseriesDataset<Number>> getParametersData(String[] parameters) {
 
         Map<String,TimeseriesDataset<Number>> datasetMap = new HashMap<>();
         Arrays.stream(parameters).forEach(variable -> {
             datasetMap.put(variable,inputDatasetMap.get(variable));
         });
+
 
         return datasetMap;
     }

@@ -2,7 +2,6 @@ package com.tevl.exp;
 
 import com.tevl.datasource.DatasourceProvider;
 import com.tevl.datasource.InMemoryDataSource;
-import com.tevl.ds.DefaultTimeseriesDataset;
 import com.tevl.ds.TimeseriesDataset;
 import com.tevl.exp.beans.Variable;
 import com.tevl.exp.eval.EvaluationConfig;
@@ -20,97 +19,84 @@ import java.util.Map;
 public class TestSpelExpression {
 
     @Test
-    public void testBasicExpression()
-    {
-        //TODO don't you think, one has to do too many things to evaluate this simple expression.
-        //what if you had something like Expression.builder("add(#A,2)").withTSDataset("A", aVariableDataset).evaluate()
-        //everything else is hidden in the builder.
-        String expression = "add(#A,2)";
-        SpelExpression spelExpression = new SpelExpression(expression);
-        EvaluationContext evaluationContext = new StandardEvaluationContext();
+    public void testBasicExpression() {
+        String expression = "#A+2";
 
-        TimeseriesDataset<Number> expectedDataset = new DefaultTimeseriesDataset<>();
+        Map<Long,Number> expectedDatasetMap = new LinkedHashMap<>();
 
         InMemoryDataSource dataSource = new InMemoryDataSource();
-        TimeseriesDataset<Number> aVariableDataset = new DefaultTimeseriesDataset<>();
-        aVariableDataset.addValue(1546626611976L,	0.7309677874);
-        aVariableDataset.addValue(1546626611977L,	0.2405364157);
-        aVariableDataset.addValue(1546626611978L,	0.6374174254);
-        aVariableDataset.addValue(1546626611979L,	0.5504370051);
-        aVariableDataset.addValue(1546626611980L,	0.5975452778);
-        aVariableDataset.addValue(1546626611981L,	0.3332183995);
-        aVariableDataset.addValue(1546626611982L,	0.3851891847);
-        aVariableDataset.addValue(1546626611983L,	0.9848415402);
-        aVariableDataset.addValue(1546626611984L,	0.8791825179);
+        Map<Long,Number> aVariableDataset = new LinkedHashMap<>();
+        aVariableDataset.put(1546626611976L, 0.7309677874);
+        aVariableDataset.put(1546626611977L, 0.2405364157);
+        aVariableDataset.put(1546626611978L, 0.6374174254);
+        aVariableDataset.put(1546626611979L, 0.5504370051);
+        aVariableDataset.put(1546626611980L, 0.5975452778);
+        aVariableDataset.put(1546626611981L, 0.3332183995);
+        aVariableDataset.put(1546626611982L, 0.3851891847);
+        aVariableDataset.put(1546626611983L, 0.9848415402);
+        aVariableDataset.put(1546626611984L, 0.8791825179);
 
-        Map<String,TimeseriesDataset<Number>> datasetMap = new LinkedHashMap<>();
-        datasetMap.put("A",aVariableDataset);
+        Map<String, TimeseriesDataset<Number>> datasetMap = new LinkedHashMap<>();
+        datasetMap.put("A", TimeseriesDataset.Builder.<Number>instance().withDataset(aVariableDataset).build());
         dataSource.setDataMap(datasetMap);
 
-        expectedDataset.addValue(1546626611976L,	2.7309677874);
-        expectedDataset.addValue(1546626611977L,	2.2405364157);
-        expectedDataset.addValue(1546626611978L,	2.6374174254);
-        expectedDataset.addValue(1546626611979L,	2.5504370051);
-        expectedDataset.addValue(1546626611980L,	2.5975452778);
-        expectedDataset.addValue(1546626611981L,	2.3332183995);
-        expectedDataset.addValue(1546626611982L,	2.3851891847);
-        expectedDataset.addValue(1546626611983L,	2.9848415402);
-        expectedDataset.addValue(1546626611984L,	2.8791825179);
+        expectedDatasetMap.put(1546626611976L, 2.730968);
+        expectedDatasetMap.put(1546626611977L, 2.240536);
+        expectedDatasetMap.put(1546626611978L, 2.637417);
+        expectedDatasetMap.put(1546626611979L, 2.550437);
+        expectedDatasetMap.put(1546626611980L, 2.597545);
+        expectedDatasetMap.put(1546626611981L, 2.333218);
+        expectedDatasetMap.put(1546626611982L, 2.385189);
+        expectedDatasetMap.put(1546626611983L, 2.984842);
+        expectedDatasetMap.put(1546626611984L, 2.879183);
+
+        TimeseriesDataset<Number> expectedDataset = TimeseriesDataset.Builder.<Number>instance()
+                .withDataset(expectedDatasetMap).build();
 
 
-        DatasourceProvider datasourceProvider = new DatasourceProvider(dataSource, dataSource);
-        ExpressionContextResolver contextResolver = new DefaultExpressionContextResolver(datasourceProvider);
 
-        spelExpression.setExpressionContextResolver(contextResolver);
         //TODO what is the purpose of return a variable instead of TimeseriesDataset directly
-        Variable value = spelExpression.getValue(evaluationContext);
-        TimeseriesDataset<Number> outputDataset = value.getValue();
+        Variable output = Expression.Builder.instance(expression)
+                .useInMemoryDataSource().withDataSet(datasetMap).evaluate(new StandardEvaluationContext());
 
+
+        TimeseriesDataset<Number> outputDataset = output.getValue();
+        System.out.println("outputDataset = " + outputDataset);
 
         Assert.assertTrue(assertEquals(expectedDataset, outputDataset));
     }
 
-    //TODO provide meaningful handling of this case
     @Test
-    public void testMissingExpression()
-    {
-        String expression = "add(#X,2)";
-        SpelExpression spelExpression = new SpelExpression(expression);
+    public void testMissingExpression() {
+        String expression = "#X+2";
         EvaluationContext evaluationContext = new StandardEvaluationContext();
 
-        InMemoryDataSource dataSource = new InMemoryDataSource();
-
-
-        DatasourceProvider datasourceProvider = new DatasourceProvider(dataSource, dataSource);
-        ExpressionContextResolver contextResolver = new DefaultExpressionContextResolver(datasourceProvider);
-
-        spelExpression.setExpressionContextResolver(contextResolver);
-        spelExpression.getValue(evaluationContext);
-        Assert.fail();
+        Variable value = Expression.Builder.instance(expression)
+                .useInMemoryDataSource().evaluate(evaluationContext);
+        Assert.assertTrue(assertEquals(TimeseriesDataset.Builder.<Number>instance().build(),value.getValue()));
     }
 
     @Test
-    public void testMultiply()
-    {
-       String expression = "multiply(#A,multiply(#B,2))";
+    public void testMultiply() {
+        String expression = "#A*(#B*100)";
         SpelExpression spelExpression = new SpelExpression(expression);
         EvaluationContext evaluationContext = new StandardEvaluationContext();
 
         InMemoryDataSource dataSource = new InMemoryDataSource();
-        TimeseriesDataset<Number> aVariableDataset = new DefaultTimeseriesDataset<>();
-        aVariableDataset.addValue(1546626611976L,0.0232381225);
+        Map<Long,Number> aVariableDataset = new LinkedHashMap<>();
+        aVariableDataset.put(1546626611976L, 0.0232381225);
 
-        TimeseriesDataset<Number> bVariableDataset = new DefaultTimeseriesDataset<>();
-        bVariableDataset.addValue(1546626611976L,73.0967787377);
+        Map<Long,Number> bVariableDataset = new LinkedHashMap<>();
+        bVariableDataset.put(1546626611976L, 73.0967787377);
 
+        Map<Long,Number> expectedDatasetMap = new LinkedHashMap<>();
+        expectedDatasetMap.put(1546626611976L, 169.86319);
 
-
-        TimeseriesDataset<Number> expectedDataset = new DefaultTimeseriesDataset<>();
-        expectedDataset.addValue(1546626611976L,3.3972637973);
-
-        Map<String,TimeseriesDataset<Number>> datasetMap = new LinkedHashMap<>();
-        datasetMap.put("A",aVariableDataset);
-        datasetMap.put("B",bVariableDataset);
+        Map<String, TimeseriesDataset<Number>> datasetMap = new LinkedHashMap<>();
+        datasetMap.put("A", TimeseriesDataset.Builder.<Number>instance()
+                .withDataset(aVariableDataset).build());
+        datasetMap.put("B", TimeseriesDataset.Builder.<Number>instance()
+                .withDataset(bVariableDataset).build());
         dataSource.setDataMap(datasetMap);
 
         DatasourceProvider datasourceProvider = new DatasourceProvider(dataSource, dataSource);
@@ -120,57 +106,63 @@ public class TestSpelExpression {
         Variable value = spelExpression.getValue(evaluationContext);
         TimeseriesDataset<Number> outputDataset = value.getValue();
 
+        TimeseriesDataset<Number> expectedDataset = TimeseriesDataset.Builder.<Number>instance()
+                .withDataset(expectedDatasetMap).build();
+        System.out.println("outputDataset = " + outputDataset);
+        System.out.println("expectedDataset = " + expectedDataset);
+
         Assert.assertTrue(assertEquals(expectedDataset, outputDataset));
 
 
     }
 
     @Test
-    public void testTwoVariableFunctionExpression()
-    {
-        String expression = "add(#A,#B)";
+    public void testTwoVariableFunctionExpression() {
+        String expression = "#A+#B";
         SpelExpression spelExpression = new SpelExpression(expression);
         EvaluationContext evaluationContext = new StandardEvaluationContext();
 
-        TimeseriesDataset<Number> expectedDataset = new DefaultTimeseriesDataset<>();
+        Map<Long,Number> expectedDatasetMap = new LinkedHashMap<>();
 
         InMemoryDataSource dataSource = new InMemoryDataSource();
-        TimeseriesDataset<Number> aVariableDataset = new DefaultTimeseriesDataset<>();
-        aVariableDataset.addValue(1546626611976L,	0.7309677874);
-        aVariableDataset.addValue(1546626611977L,	0.2405364157);
-        aVariableDataset.addValue(1546626611978L,	0.6374174254);
-        aVariableDataset.addValue(1546626611979L,	0.5504370051);
-        aVariableDataset.addValue(1546626611980L,	0.5975452778);
-        aVariableDataset.addValue(1546626611981L,	0.3332183995);
-        aVariableDataset.addValue(1546626611982L,	0.3851891847);
-        aVariableDataset.addValue(1546626611983L,	0.9848415402);
-        aVariableDataset.addValue(1546626611984L,	0.8791825179);
+        Map<Long,Number> aVariableDataset = new LinkedHashMap<>();
+        aVariableDataset.put(1546626611976L, 0.7309677874);
+        aVariableDataset.put(1546626611977L, 0.2405364157);
+        aVariableDataset.put(1546626611978L, 0.6374174254);
+        aVariableDataset.put(1546626611979L, 0.5504370051);
+        aVariableDataset.put(1546626611980L, 0.5975452778);
+        aVariableDataset.put(1546626611981L, 0.3332183995);
+        aVariableDataset.put(1546626611982L, 0.3851891847);
+        aVariableDataset.put(1546626611983L, 0.9848415402);
+        aVariableDataset.put(1546626611984L, 0.8791825179);
 
-        TimeseriesDataset<Number> bVariableDataset = new DefaultTimeseriesDataset<>();
-        bVariableDataset.addValue(1546626611976L,	0.7309677874);
-        bVariableDataset.addValue(1546626611977L,	0.2405364157);
-        bVariableDataset.addValue(1546626611978L,	0.6374174254);
-        bVariableDataset.addValue(1546626611979L,	0.5504370051);
-        bVariableDataset.addValue(1546626611980L,	0.5975452778);
-        bVariableDataset.addValue(1546626611981L,	0.3332183995);
-        bVariableDataset.addValue(1546626611982L,	0.3851891847);
-        bVariableDataset.addValue(1546626611983L,	0.9848415402);
-        bVariableDataset.addValue(1546626611984L,	0.8791825179);
+        Map<Long,Number> bVariableDataset = new LinkedHashMap<>();
+        bVariableDataset.put(1546626611976L, 0.7309677874);
+        bVariableDataset.put(1546626611977L, 0.2405364157);
+        bVariableDataset.put(1546626611978L, 0.6374174254);
+        bVariableDataset.put(1546626611979L, 0.5504370051);
+        bVariableDataset.put(1546626611980L, 0.5975452778);
+        bVariableDataset.put(1546626611981L, 0.3332183995);
+        bVariableDataset.put(1546626611982L, 0.3851891847);
+        bVariableDataset.put(1546626611983L, 0.9848415402);
+        bVariableDataset.put(1546626611984L, 0.8791825179);
 
-        Map<String,TimeseriesDataset<Number>> datasetMap = new LinkedHashMap<>();
-        datasetMap.put("A",aVariableDataset);
-        datasetMap.put("B",bVariableDataset);
+        Map<String, TimeseriesDataset<Number>> datasetMap = new LinkedHashMap<>();
+        datasetMap.put("A", TimeseriesDataset.Builder.<Number>instance()
+                .withDataset(aVariableDataset).build());
+        datasetMap.put("B", TimeseriesDataset.Builder.<Number>instance()
+                .withDataset(bVariableDataset).build());
         dataSource.setDataMap(datasetMap);
 
-        expectedDataset.addValue(1546626611976L,	1.4619355748);
-        expectedDataset.addValue(1546626611977L,	0.4810728314);
-        expectedDataset.addValue(1546626611978L,	1.2748348508);
-        expectedDataset.addValue(1546626611979L,	1.1008740102);
-        expectedDataset.addValue(1546626611980L,	1.1950905556);
-        expectedDataset.addValue(1546626611981L,	0.666436799);
-        expectedDataset.addValue(1546626611982L,	0.7703783694);
-        expectedDataset.addValue(1546626611983L,	1.9696830804);
-        expectedDataset.addValue(1546626611984L,	1.7583650358);
+        expectedDatasetMap.put(1546626611976L, 1.461936);
+        expectedDatasetMap.put(1546626611977L, 0.481073);
+        expectedDatasetMap.put(1546626611978L, 1.274835);
+        expectedDatasetMap.put(1546626611979L, 1.100874);
+        expectedDatasetMap.put(1546626611980L, 1.195091);
+        expectedDatasetMap.put(1546626611981L, 0.666437);
+        expectedDatasetMap.put(1546626611982L, 0.770378);
+        expectedDatasetMap.put(1546626611983L, 1.969683);
+        expectedDatasetMap.put(1546626611984L, 1.758365);
 
 
         DatasourceProvider datasourceProvider = new DatasourceProvider(dataSource, dataSource);
@@ -179,6 +171,10 @@ public class TestSpelExpression {
         spelExpression.setExpressionContextResolver(contextResolver);
         Variable value = spelExpression.getValue(evaluationContext);
         TimeseriesDataset<Number> outputDataset = value.getValue();
+        TimeseriesDataset<Number> expectedDataset = TimeseriesDataset.Builder.<Number>instance()
+                .withDataset(expectedDatasetMap).build();
+
+        System.out.println("outputDataset = " + outputDataset);
 
         Assert.assertTrue(assertEquals(expectedDataset, outputDataset));
 
@@ -186,9 +182,8 @@ public class TestSpelExpression {
 
     @Test
     @Ignore("Test case is failing")
-    public void testTwoVariableExpressionWithExtrapolation()
-    {
-        String expression = "add(#A,#B)";
+    public void testTwoVariableExpressionWithExtrapolation() {
+        String expression = "#A+#B";
         SpelExpression spelExpression = new SpelExpression(expression);
         EvaluationContext evaluationContext = new StandardEvaluationContext();
         EvaluationConfig evaluationConfig = new EvaluationConfig();
@@ -197,40 +192,43 @@ public class TestSpelExpression {
 
         InMemoryDataSource dataSource = new InMemoryDataSource();
 
-        TimeseriesDataset<Number> aVariableDataset = new DefaultTimeseriesDataset<>();
-        aVariableDataset.addValue(1546626611976L,	0.7309677874);
-        aVariableDataset.addValue(1546626611977L,	0.2405364157);
-        aVariableDataset.addValue(1546626611978L,	0.6374174254);
-        aVariableDataset.addValue(1546626611979L,	0.5504370051);
-        aVariableDataset.addValue(1546626611980L,	0.5975452778);
-        aVariableDataset.addValue(1546626611981L,	0.3332183995);
-        aVariableDataset.addValue(1546626611982L,	0.3851891847);
-        aVariableDataset.addValue(1546626611983L,	0.9848415402);
-        aVariableDataset.addValue(1546626611984L,	0.8791825179);
+        Map<Long,Number> aVariableDataset = new LinkedHashMap<>();
+        aVariableDataset.put(1546626611976L, 0.7309677874);
+        aVariableDataset.put(1546626611977L, 0.2405364157);
+        aVariableDataset.put(1546626611978L, 0.6374174254);
+        aVariableDataset.put(1546626611979L, 0.5504370051);
+        aVariableDataset.put(1546626611980L, 0.5975452778);
+        aVariableDataset.put(1546626611981L, 0.3332183995);
+        aVariableDataset.put(1546626611982L, 0.3851891847);
+        aVariableDataset.put(1546626611983L, 0.9848415402);
+        aVariableDataset.put(1546626611984L, 0.8791825179);
 
-        TimeseriesDataset<Number> bVariableDataset = new DefaultTimeseriesDataset<>();
-        bVariableDataset.addValue(1546626611974L,	0.9848415402);
-        bVariableDataset.addValue(1546626611983L,	0.8791825179);
+        Map<Long,Number> bVariableDataset = new LinkedHashMap<>();
+        bVariableDataset.put(1546626611974L, 0.9848415402);
+        bVariableDataset.put(1546626611983L, 0.8791825179);
 
-        Map<String,TimeseriesDataset<Number>> datasetMap = new LinkedHashMap<>();
-        datasetMap.put("A",aVariableDataset);
-        datasetMap.put("B",bVariableDataset);
+        Map<String, TimeseriesDataset<Number>> datasetMap = new LinkedHashMap<>();
+        datasetMap.put("A", TimeseriesDataset.Builder.<Number>instance()
+                .withDataset(aVariableDataset).build());
+        datasetMap.put("B", TimeseriesDataset.Builder.<Number>instance()
+                .withDataset(bVariableDataset).build());
         dataSource.setDataMap(datasetMap);
 
         DatasourceProvider datasourceProvider = new DatasourceProvider(dataSource, dataSource);
         ExpressionContextResolver contextResolver = new DefaultExpressionContextResolver(datasourceProvider);
 
-        TimeseriesDataset<Number> expectedDataset = new DefaultTimeseriesDataset<>();
-        expectedDataset.addValue(1546626611976L,	1.715809328);
-        expectedDataset.addValue(1546626611977L,	1.225377956);
-        expectedDataset.addValue(1546626611978L,	1.622258966);
-        expectedDataset.addValue(1546626611979L,	1.535278545);
-        expectedDataset.addValue(1546626611980L,	1.582386818);
-        expectedDataset.addValue(1546626611981L,	1.31805994);
-        expectedDataset.addValue(1546626611982L,	1.370030725);
-        expectedDataset.addValue(1546626611983L,	1.864024058);
-        expectedDataset.addValue(1546626611984L,	1.758365036);
-
+        Map<Long,Number> expectedDatasetMap = new LinkedHashMap<>();
+        expectedDatasetMap.put(1546626611976L, 1.715809328);
+        expectedDatasetMap.put(1546626611977L, 1.225377956);
+        expectedDatasetMap.put(1546626611978L, 1.622258966);
+        expectedDatasetMap.put(1546626611979L, 1.535278545);
+        expectedDatasetMap.put(1546626611980L, 1.582386818);
+        expectedDatasetMap.put(1546626611981L, 1.31805994);
+        expectedDatasetMap.put(1546626611982L, 1.370030725);
+        expectedDatasetMap.put(1546626611983L, 1.864024058);
+        expectedDatasetMap.put(1546626611984L, 1.758365036);
+        TimeseriesDataset<Number> expectedDataset = TimeseriesDataset.Builder.<Number>instance()
+                .withDataset(expectedDatasetMap).build();
 
 
         spelExpression.setExpressionContextResolver(contextResolver);

@@ -1,6 +1,7 @@
 package com.tevl.exp;
 
 import com.tevl.exp.beans.Variable;
+import com.tevl.exp.engine.impl.SpelOperatorOverloader;
 import com.tevl.exp.engine.impl.SpringElEvaluationContext;
 import com.tevl.exp.eval.context.EvaluationContext;
 import com.tevl.exp.eval.context.binding.RuntimeBindingContext;
@@ -32,6 +33,7 @@ public class SpelExpression extends Expression {
         LOGGER.info("Processing expression "+ expressionString);
         SpelExpressionParser expressionParser = new SpelExpressionParser();
         spelExpression = expressionParser.parseExpression(expressionString);
+
 
         SpelNode ast = ((org.springframework.expression.spel.standard.SpelExpression) spelExpression).getAST();
 
@@ -73,6 +75,8 @@ public class SpelExpression extends Expression {
         Map<String,Object> bindingVariables = bindingContext.getBindingVariables();
         bindingVariables.forEach(springElEvaluationContext::setVariable);
         springElEvaluationContext.setRootObject(FunctionPluginRegistry.INSTANCE);
+        springElEvaluationContext.setOperatorOverloader(
+                new SpelOperatorOverloader(evaluationContext.getEvaluationConfig()));
         springElEvaluationContext.setAdditionalContext(evaluationContext);
         Object value = spelExpression.getValue(springElEvaluationContext);
         return (Variable) value;

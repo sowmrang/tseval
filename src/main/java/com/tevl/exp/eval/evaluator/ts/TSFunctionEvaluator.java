@@ -35,9 +35,21 @@ public class TSFunctionEvaluator {
         else {
 
             boolean allVariablesHaveDefaultValues = true;
+            boolean variableHasInvalidValue = false;
             for (int i = 0; i < parametersDataset.length; i++) {
                 Variable variable = parametersDataset[i];
                 allVariablesHaveDefaultValues = allVariablesHaveDefaultValues && variable.getDefaultValue() != null;
+                if(variable.getDefaultValue() == null && variable.getValue() == null)
+                {
+                    variableHasInvalidValue = true;
+                    break;
+                }
+            }
+            if(variableHasInvalidValue)
+            {
+                LOGGER.info("One of the variables has neither valid value nor is a constant. " +
+                        "Cannot evaluate the expression");
+                return TimeseriesDataset.Builder.<Number>instance().build();
             }
             if(allVariablesHaveDefaultValues)
             {

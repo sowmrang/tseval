@@ -4,7 +4,7 @@ import com.tevl.ds.strategy.ExtrapolationStrategy;
 
 import java.util.Set;
 
-public class AutoExtrapolatingDataset<T> implements TimeseriesDataset<T> {
+class AutoExtrapolatingDataset<T> implements TimeseriesDataset<T> {
 
     private final TimeseriesDataset<T> underlyingDataset;
     private final ExtrapolationStrategy<T> extrapolationStrategy;

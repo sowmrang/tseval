@@ -1,12 +1,14 @@
 package com.tevl.exp.beans;
 
-import com.tevl.ds.DefaultTimeseriesDataset;
 import com.tevl.ds.TimeseriesDataset;
+import com.tevl.ds.strategy.CarryForwardStrategy;
+
+import java.util.Map;
 
 public class Variable
 {
     private final String variableName;
-    private TimeseriesDataset<Number> value = new DefaultTimeseriesDataset<>();
+    private TimeseriesDataset<Number> value;
     private Number defaultValue;
 
     public Variable(String variableName) {
@@ -15,21 +17,20 @@ public class Variable
 
     public void setValue(TimeseriesDataset<Number> value)
     {
-        this.setValue(value,false,-1,false);
+        this.value = value;
     }
 
-    public void setValue(TimeseriesDataset<Number> value, boolean downsampleValues, long downsamplingFrequency, boolean extrapolate)
+    public void setValue(Map<Long,Number> values, boolean downsampleValues, long downsamplingFrequency, boolean extrapolate)
     {
-        this.value = TimeseriesDataset.Builder.<Number>instance().withValue(value)
+        this.value = TimeseriesDataset.Builder.<Number>instance().withDataset(values)
                 .withDownsamplingFrequency(downsampleValues,downsamplingFrequency)
-                .dataExtrapolation(extrapolate).buildTimeseriesDataset();
+                .dataExtrapolation(extrapolate,new CarryForwardStrategy<>()).build();
     }
 
 
 
     public TimeseriesDataset<Number> getValue()
     {
-
         return value;
     }
 

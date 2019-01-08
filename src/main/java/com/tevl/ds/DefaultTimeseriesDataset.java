@@ -6,7 +6,7 @@ import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeMap;
 
-public class DefaultTimeseriesDataset<T> implements TimeseriesDataset<T> {
+class DefaultTimeseriesDataset<T> implements TimeseriesDataset<T> {
 
     private final NavigableMap<Long,T> tsDataset = new TreeMap<>();
 

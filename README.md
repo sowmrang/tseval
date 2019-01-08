@@ -28,52 +28,31 @@ expresion with time series datasets.
 
 The code fragments below are extracted from com.tevl.sample.Sample. For full working code, refer to that class.
 
+Evaluating an expression is very simple.
 
-* Create an expression using SpelExpression. Specify the expression to be processed in the form of String.
-SpelExpression uses Spring EL internally. You can refer to the Spring EL library to understand the syntax of expressions supported.
-
-````java
-SpelExpression expression = new SpelExpression("add(#A,add(#B,2))");
-
-````
-* Create an instance of DatasourceProvider with appropriate references of datasource. If configuration and runtime data are managed separately, you can
-initialize with the appropriate datasource instances. There are two implementations of datasources currently supported:
+There are two implementations of datasources currently supported:
 1. In memory
 2. JDBC
 
-Below code fragment uses an in memory datasource. You need to initialize it with data for all the variables defined in the expression.
+* To evaluate an expression with an in memory dataset, use the following code,
 
 ````java
-InMemoryDataSource dataSource = new InMemoryDataSource();
-TimeseriesDataset<Number> aVariableDataset = new DefaultTimeseriesDataset<>();
+TimeseriesDataset<Number> aVariableDataset = TimeseriesDataset.Builder.<Number>instance().build();
+populateDataset(System.currentTimeMillis()+5000,100,aVariableDataset);
 ...
-TimeseriesDataset<Number> bVariableDataset = new DefaultTimeseriesDataset<>();
+
 Map<String,TimeseriesDataset<Number>> datasetMap = new HashMap<>();
 datasetMap.put("A",aVariableDataset);
-datasetMap.put("B",bVariableDataset);
-dataSource.setDataMap(datasetMap);
+...
 
-DatasourceProvider datasourceProvider = new DatasourceProvider(dataSource, dataSource); 
-
+Variable output = Expression.Builder.instance("#A+(#B+2)").useInMemoryDataSource()
+                .withDataSet(datasetMap).evaluate(new StandardEvaluationContext());
 ````
-* Create an instance of ExpressionContextResolver and pass the reference of DatasourceProvider to it.
-ExpressionContextResolver resolves various elements such as variables defined in the expression and binds respective 
-values to the evaluation runtime
-
-````java
-ExpressionContextResolver expressionContextResolver = new DefaultExpressionContextResolver(
-        datasourceProvider);
-expression.setExpressionContextResolver(expressionContextResolver);
-
+* To evaluate an expression with values of variables resolved from JDBC store, call `useJdbcDataSource`
+````
+Expression.Builder.instance("#A+(#B+2)").useJdbcDataSource();
 ````
 
-* Finally, call the getValue of Expression to obtain the calculated value. You need to create an instance 
-of EvaluationContext. EvaluationContext can hold any additional metadata that may supplement the evaluation at runtime
-
-````java
-Variable output = expression.getValue(evaluationContext);
-
-````
 EvaluationContext holds the configuration defined around the expression. It's possible to evaluate an expression using following strategies:
 1. Extrapolate missing value - Currently, LAST function which would return previous value is being used for extrapolation. (WIP)
 2. Downsample values to nearest time interval (WIP)

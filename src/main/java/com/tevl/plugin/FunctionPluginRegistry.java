@@ -32,9 +32,9 @@ public class FunctionPluginRegistry {
                 functionPluginMap.put(functionName,descriptor));
     }
 
-    public FunctionPlugin getFunctionPlugin(String functionName,EvaluationConfig config)
+    public FunctionPlugin getFunctionPlugin(String pluginName,EvaluationConfig config)
     {
-        PluginDescriptor descriptor = functionPluginMap.get(functionName);
+        PluginDescriptor descriptor = functionPluginMap.get(pluginName);
         String className = descriptor.getClassName();
 
         FunctionPluginBase functionPlugin = null;
@@ -42,8 +42,7 @@ public class FunctionPluginRegistry {
             functionPlugin = (FunctionPluginBase) Class.forName(className).newInstance();
             functionPlugin.setEvaluationConfig(config);
         } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
-            //TODO handle better
-            e.printStackTrace();
+            throw new RuntimeException("Unable to instantiate plugin "+className,e);
         }
         return functionPlugin;
     }

@@ -7,6 +7,7 @@ import java.util.List;
 
 public abstract class Expression {
 
+
     protected String expressionString;
 
     protected Expression(String expressionString)
@@ -21,4 +22,13 @@ public abstract class Expression {
     public String getExpressionString() {
         return expressionString;
     }
+
+    public static class Builder
+    {
+        public static ExpressionEvaluatorBuilder instance(String expressionString)
+        {
+            return ExpressionEvaluatorBuilder.instance(expressionString);
+        }
+    }
+
 }

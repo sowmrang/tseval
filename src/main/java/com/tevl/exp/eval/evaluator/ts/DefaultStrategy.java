@@ -1,9 +1,9 @@
 package com.tevl.exp.eval.evaluator.ts;
 
-import com.tevl.ds.DefaultTimeseriesDataset;
 import com.tevl.ds.TimeseriesDataset;
 import com.tevl.exp.beans.Variable;
 
+import java.util.Collections;
 import java.util.function.BiFunction;
 
 public class DefaultStrategy {
@@ -25,23 +25,15 @@ public class DefaultStrategy {
             }
         }
         TimeseriesDataset<Number> datasetToIterate = inputs[minDatasetIndex].getValue();
-
-        TimeseriesDataset<Number> outputDataset = new DefaultTimeseriesDataset<>();
+        TimeseriesDataset<Number> outputDataset = TimeseriesDataset.Builder.<Number>instance().build();
         datasetToIterate.getTimestampSeries().forEach(timestamp -> {
             boolean columnValueNull;
             TimeseriesDataset<Number> firstParamDataset = inputs[0].getValue();
-            Number firstParamValue = firstParamDataset.getValue(timestamp);
+            Number firstParamValue = (firstParamDataset == null || firstParamDataset.getValue(timestamp) == null)
+                    ? inputs[0].getDefaultValue() : firstParamDataset.getValue(timestamp);
             TimeseriesDataset<Number> secondParamDataset = inputs[1].getValue();
-            Number secondParamValue = secondParamDataset.getValue(timestamp);
-
-            if(firstParamValue == null)
-            {
-                firstParamValue = inputs[0].getDefaultValue();
-            }
-            if(secondParamValue == null)
-            {
-                secondParamValue = inputs[1].getDefaultValue();
-            }
+            Number secondParamValue = (secondParamDataset == null || secondParamDataset.getValue(timestamp) == null)
+                    ? inputs[1].getDefaultValue() : secondParamDataset.getValue(timestamp);
 
             columnValueNull = (firstParamValue == null || secondParamValue == null);
 

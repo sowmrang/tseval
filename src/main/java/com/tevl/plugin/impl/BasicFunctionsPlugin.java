@@ -10,11 +10,13 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.logging.Logger;
 
 public class BasicFunctionsPlugin extends FunctionPluginBase {
 
-    private final DecimalFormat decimalFormat = new DecimalFormat(".##########");
+    private final DecimalFormat decimalFormat = new DecimalFormat(".######");
 
+    private static Logger LOGGER = Logger.getLogger(BasicFunctionsPlugin.class.getName());
 
     @Override
     protected PluginDescriptor init() {
@@ -29,11 +31,14 @@ public class BasicFunctionsPlugin extends FunctionPluginBase {
             functions.put(multiply.getName(),multiply);
             Method divide = BasicFunctionsPlugin.class.getMethod("divide", Variable.class, Variable.class);
             functions.put(divide.getName(),divide);
-            descriptor.setPluginName(BasicFunctionsPlugin.class.getName());
+            Method modulus = BasicFunctionsPlugin.class.getMethod("modulus", Variable.class, Variable.class);
+            functions.put(divide.getName(),modulus);
+            Method pow = BasicFunctionsPlugin.class.getMethod("pow", Variable.class, Variable.class);
+            functions.put(divide.getName(),pow);
+            descriptor.setPluginName("basics");
             descriptor.setSupportedFunctions(functions);
         } catch (NoSuchMethodException e) {
-            //TODO handle better
-            e.printStackTrace();
+            LOGGER.warning("Unable to find method for publishing "+e.getCause());
         }
         return descriptor;
     }
@@ -72,6 +77,26 @@ public class BasicFunctionsPlugin extends FunctionPluginBase {
                         decimalFormat.format(Double.parseDouble(p1Str) / Double.parseDouble(p2Str))));
 
     }
+
+    public Variable modulus(Variable var1,Variable var2)
+    {
+        return computeFunction(var1, var2,
+                (String p1Str,String p2Str) -> Long.parseLong(p1Str) % Long.parseLong(p2Str),
+                (String p1Str,String p2Str) -> Double.parseDouble(
+                        decimalFormat.format(Double.parseDouble(p1Str) % Double.parseDouble(p2Str))));
+
+    }
+
+    public Variable pow(Variable var1,Variable var2)
+    {
+        return null;
+//        return computeFunction(var1, var2,
+//                (String p1Str,String p2Str) -> Math.pow(Long.parseLong(p1Str),  Long.parseLong(p2Str));
+//                (String p1Str,String p2Str) -> Double.parseDouble(
+//                        decimalFormat.format(Math.pow(Double.parseDouble(p1Str),Double.parseDouble(p2Str)))));
+
+    }
+
 
 
 
