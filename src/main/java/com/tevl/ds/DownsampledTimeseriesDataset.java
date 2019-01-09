@@ -43,10 +43,6 @@ class DownsampledTimeseriesDataset<T> implements TimeseriesDataset<T> {
         return null;
     }
 
-    @Override
-    public TimeseriesDataset<T> subRange(Long startTimestamp, Long endTimestamp) {
-        return null;
-    }
 
     @Override
     public Iterator<Map.Entry<Long,T>> iterator() {

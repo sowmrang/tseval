@@ -45,7 +45,7 @@ Map<String,TimeseriesDataset<Number>> datasetMap = new HashMap<>();
 datasetMap.put("A",aVariableDataset);
 ...
 
-Variable output = Expression.Builder.instance("#A+(#B+2)").useInMemoryDataSource()
+TimeseriesDataset<Number> output = Expression.Builder.instance("#A+(#B+2)").useInMemoryDataSource()
                 .withDataSet(datasetMap).evaluate(new StandardEvaluationContext());
 ````
 * To evaluate an expression with values of variables resolved from JDBC store, call `useJdbcDataSource`
