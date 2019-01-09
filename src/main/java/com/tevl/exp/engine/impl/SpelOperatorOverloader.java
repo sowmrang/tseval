@@ -1,6 +1,6 @@
 package com.tevl.exp.engine.impl;
 
-import com.tevl.exp.beans.Variable;
+import com.tevl.ds.TimeseriesDataset;
 import com.tevl.exp.eval.EvaluationConfig;
 import com.tevl.plugin.FunctionPlugin;
 import com.tevl.plugin.FunctionPluginRegistry;
@@ -35,9 +35,9 @@ public class SpelOperatorOverloader implements OperatorOverloader{
             case POWER:
             case SUBTRACT:
             case MODULUS:
-                boolean supported = (leftOperand != null && (Variable.class.isAssignableFrom(leftOperand.getClass()) ||
+                boolean supported = (leftOperand != null && (TimeseriesDataset.class.isAssignableFrom(leftOperand.getClass()) ||
                         Number.class.isAssignableFrom(getOperandType(leftOperand)))) && (rightOperand != null &&
-                        (Variable.class.isAssignableFrom(rightOperand.getClass()) ||
+                        (TimeseriesDataset.class.isAssignableFrom(rightOperand.getClass()) ||
                                 Number.class.isAssignableFrom(getOperandType(rightOperand))));
                 LOGGER.info("Operator  "+operation + " supported? "+supported);
                 return supported;
@@ -98,8 +98,8 @@ public class SpelOperatorOverloader implements OperatorOverloader{
             LOGGER.info("Operator "+operation + " resolved to method name "+functionPluginMethodName);
             FunctionPlugin fpObj = getMethodPluginContainer(functionPluginMethodName);
             Method method = getMethod(fpObj, functionPluginMethodName, evaluationConfig);
-            Variable firstParameter = asVariable(leftOperand);
-            Variable secondParameter = asVariable(rightOperand);
+            TimeseriesDataset firstParameter = asTimeseriesDataset(leftOperand);
+            TimeseriesDataset secondParameter = asTimeseriesDataset(rightOperand);
             return method.invoke(fpObj, firstParameter, secondParameter);
 
         }
@@ -108,14 +108,13 @@ public class SpelOperatorOverloader implements OperatorOverloader{
         }
     }
 
-    private Variable asVariable(@Nullable Object leftOperand) {
-        Variable firstParameter = null;
-        if (Variable.class.isAssignableFrom(leftOperand.getClass())) {
-            firstParameter = (Variable) leftOperand;
+    private TimeseriesDataset asTimeseriesDataset(@Nullable Object leftOperand) {
+        TimeseriesDataset firstParameter = null;
+        if (TimeseriesDataset.class.isAssignableFrom(leftOperand.getClass())) {
+            firstParameter = (TimeseriesDataset) leftOperand;
         } else if (Number.class.isAssignableFrom(leftOperand.getClass())) {
-            Variable variable = new Variable("const");
-            variable.setDefaultValue((Number)leftOperand);
-            firstParameter = variable;
+            firstParameter = TimeseriesDataset.Builder.<Number>instance()
+                    .withDefaultValue((Number)leftOperand).build();
         }
         return firstParameter;
     }

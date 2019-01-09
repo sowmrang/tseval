@@ -55,12 +55,10 @@ public class TestSpelExpression {
 
 
 
-        //TODO what is the purpose of return a variable instead of TimeseriesDataset directly
-        Variable output = Expression.Builder.instance(expression)
+        TimeseriesDataset<Number> outputDataset = Expression.Builder.instance(expression)
                 .useInMemoryDataSource().withDataSet(datasetMap).evaluate(new StandardEvaluationContext());
 
 
-        TimeseriesDataset<Number> outputDataset = output.getValue();
         System.out.println("outputDataset = " + outputDataset);
 
         Assert.assertTrue(assertEquals(expectedDataset, outputDataset));
@@ -71,9 +69,9 @@ public class TestSpelExpression {
         String expression = "#X+2";
         EvaluationContext evaluationContext = new StandardEvaluationContext();
 
-        Variable value = Expression.Builder.instance(expression)
+        TimeseriesDataset<Number> value = Expression.Builder.instance(expression)
                 .useInMemoryDataSource().evaluate(evaluationContext);
-        Assert.assertTrue(assertEquals(TimeseriesDataset.Builder.<Number>instance().build(),value.getValue()));
+        Assert.assertNull(value);
     }
 
     @Test
@@ -99,12 +97,9 @@ public class TestSpelExpression {
                 .withDataset(bVariableDataset).build());
         dataSource.setDataMap(datasetMap);
 
-        DatasourceProvider datasourceProvider = new DatasourceProvider(dataSource, dataSource);
-        ExpressionContextResolver contextResolver = new DefaultExpressionContextResolver(datasourceProvider);
+        TimeseriesDataset<Number> outputDataset = Expression.Builder.instance(expression).useInMemoryDataSource()
+                .withDataSet(datasetMap).evaluate(new StandardEvaluationContext());
 
-        spelExpression.setExpressionContextResolver(contextResolver);
-        Variable value = spelExpression.getValue(evaluationContext);
-        TimeseriesDataset<Number> outputDataset = value.getValue();
 
         TimeseriesDataset<Number> expectedDataset = TimeseriesDataset.Builder.<Number>instance()
                 .withDataset(expectedDatasetMap).build();
@@ -119,12 +114,9 @@ public class TestSpelExpression {
     @Test
     public void testTwoVariableFunctionExpression() {
         String expression = "#A+#B";
-        SpelExpression spelExpression = new SpelExpression(expression);
-        EvaluationContext evaluationContext = new StandardEvaluationContext();
 
         Map<Long,Number> expectedDatasetMap = new LinkedHashMap<>();
 
-        InMemoryDataSource dataSource = new InMemoryDataSource();
         Map<Long,Number> aVariableDataset = new LinkedHashMap<>();
         aVariableDataset.put(1546626611976L, 0.7309677874);
         aVariableDataset.put(1546626611977L, 0.2405364157);
@@ -152,7 +144,6 @@ public class TestSpelExpression {
                 .withDataset(aVariableDataset).build());
         datasetMap.put("B", TimeseriesDataset.Builder.<Number>instance()
                 .withDataset(bVariableDataset).build());
-        dataSource.setDataMap(datasetMap);
 
         expectedDatasetMap.put(1546626611976L, 1.461936);
         expectedDatasetMap.put(1546626611977L, 0.481073);
@@ -165,12 +156,8 @@ public class TestSpelExpression {
         expectedDatasetMap.put(1546626611984L, 1.758365);
 
 
-        DatasourceProvider datasourceProvider = new DatasourceProvider(dataSource, dataSource);
-        ExpressionContextResolver contextResolver = new DefaultExpressionContextResolver(datasourceProvider);
-
-        spelExpression.setExpressionContextResolver(contextResolver);
-        Variable value = spelExpression.getValue(evaluationContext);
-        TimeseriesDataset<Number> outputDataset = value.getValue();
+        TimeseriesDataset<Number> outputDataset = Expression.Builder.instance(expression).useInMemoryDataSource()
+                .withDataSet(datasetMap).evaluate(new StandardEvaluationContext());
         TimeseriesDataset<Number> expectedDataset = TimeseriesDataset.Builder.<Number>instance()
                 .withDataset(expectedDatasetMap).build();
 
@@ -232,8 +219,7 @@ public class TestSpelExpression {
 
 
         spelExpression.setExpressionContextResolver(contextResolver);
-        Variable value = spelExpression.getValue(evaluationContext);
-        TimeseriesDataset<Number> outputDataset = value.getValue();
+        TimeseriesDataset<Number> outputDataset = spelExpression.getValue(evaluationContext);
 
         System.out.println("outputDataset = " + outputDataset);
         System.out.println("expectedDataset = " + expectedDataset);

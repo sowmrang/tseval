@@ -2,6 +2,8 @@ package com.tevl.ds;
 
 import com.tevl.ds.strategy.ExtrapolationStrategy;
 
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 class AutoExtrapolatingDataset<T> implements TimeseriesDataset<T> {
@@ -46,5 +48,16 @@ class AutoExtrapolatingDataset<T> implements TimeseriesDataset<T> {
     @Override
     public int size() {
         return underlyingDataset.size();
+    }
+
+    @Override
+    public T getDefaultValue() {
+        return underlyingDataset.getDefaultValue();
+    }
+
+
+    @Override
+    public Iterator<Map.Entry<Long,T>> iterator() {
+        return underlyingDataset.iterator();
     }
 }

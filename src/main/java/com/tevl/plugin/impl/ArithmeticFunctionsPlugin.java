@@ -1,7 +1,6 @@
 package com.tevl.plugin.impl;
 
 import com.tevl.ds.TimeseriesDataset;
-import com.tevl.exp.beans.Variable;
 import com.tevl.exp.eval.evaluator.ts.TSFunctionEvaluator;
 import com.tevl.plugin.PluginDescriptor;
 
@@ -12,28 +11,28 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.logging.Logger;
 
-public class BasicFunctionsPlugin extends FunctionPluginBase {
+public class ArithmeticFunctionsPlugin extends FunctionPluginBase {
 
     private final DecimalFormat decimalFormat = new DecimalFormat(".######");
 
-    private static Logger LOGGER = Logger.getLogger(BasicFunctionsPlugin.class.getName());
+    private static Logger LOGGER = Logger.getLogger(ArithmeticFunctionsPlugin.class.getName());
 
     @Override
     protected PluginDescriptor init() {
-        PluginDescriptor descriptor = new PluginDescriptor(BasicFunctionsPlugin.class.getName());
+        PluginDescriptor descriptor = new PluginDescriptor(ArithmeticFunctionsPlugin.class.getName());
         Map<String,Method> functions = new HashMap<>();
         try {
-            Method add = BasicFunctionsPlugin.class.getMethod("add", Variable.class, Variable.class);
+            Method add = ArithmeticFunctionsPlugin.class.getMethod("add", TimeseriesDataset.class, TimeseriesDataset.class);
             functions.put(add.getName(),add);
-            Method subtract = BasicFunctionsPlugin.class.getMethod("subtract", Variable.class, Variable.class);
+            Method subtract = ArithmeticFunctionsPlugin.class.getMethod("subtract", TimeseriesDataset.class, TimeseriesDataset.class);
             functions.put(subtract.getName(),subtract);
-            Method multiply = BasicFunctionsPlugin.class.getMethod("multiply", Variable.class, Variable.class);
+            Method multiply = ArithmeticFunctionsPlugin.class.getMethod("multiply", TimeseriesDataset.class, TimeseriesDataset.class);
             functions.put(multiply.getName(),multiply);
-            Method divide = BasicFunctionsPlugin.class.getMethod("divide", Variable.class, Variable.class);
+            Method divide = ArithmeticFunctionsPlugin.class.getMethod("divide", TimeseriesDataset.class, TimeseriesDataset.class);
             functions.put(divide.getName(),divide);
-            Method modulus = BasicFunctionsPlugin.class.getMethod("modulus", Variable.class, Variable.class);
+            Method modulus = ArithmeticFunctionsPlugin.class.getMethod("modulus", TimeseriesDataset.class, TimeseriesDataset.class);
             functions.put(divide.getName(),modulus);
-            Method pow = BasicFunctionsPlugin.class.getMethod("pow", Variable.class, Variable.class);
+            Method pow = ArithmeticFunctionsPlugin.class.getMethod("pow", TimeseriesDataset.class, TimeseriesDataset.class);
             functions.put(divide.getName(),pow);
             descriptor.setPluginName("basics");
             descriptor.setSupportedFunctions(functions);
@@ -43,7 +42,7 @@ public class BasicFunctionsPlugin extends FunctionPluginBase {
         return descriptor;
     }
 
-    public Variable add(Variable var1,Variable var2)
+    public TimeseriesDataset<Number> add(TimeseriesDataset<Number> var1,TimeseriesDataset<Number> var2)
     {
         return computeFunction(var1, var2,
                 (String p1Str,String p2Str) -> Long.parseLong(p1Str) + Long.parseLong(p2Str),
@@ -51,7 +50,7 @@ public class BasicFunctionsPlugin extends FunctionPluginBase {
                         decimalFormat.format(Double.parseDouble(p1Str) + Double.parseDouble(p2Str))));
     }
 
-    public Variable multiply(Variable var1,Variable var2)
+    public TimeseriesDataset<Number> multiply(TimeseriesDataset<Number> var1,TimeseriesDataset<Number> var2)
     {
         return computeFunction(var1, var2,
                 (String p1Str,String p2Str) -> Long.parseLong(p1Str) * Long.parseLong(p2Str),
@@ -60,7 +59,7 @@ public class BasicFunctionsPlugin extends FunctionPluginBase {
 
     }
 
-    public Variable subtract(Variable var1,Variable var2)
+    public TimeseriesDataset<Number> subtract(TimeseriesDataset<Number> var1,TimeseriesDataset<Number> var2)
     {
         return computeFunction(var1, var2,
                 (String p1Str,String p2Str) -> Long.parseLong(p1Str) - Long.parseLong(p2Str),
@@ -69,7 +68,7 @@ public class BasicFunctionsPlugin extends FunctionPluginBase {
 
     }
 
-    public Variable divide(Variable var1,Variable var2)
+    public TimeseriesDataset<Number> divide(TimeseriesDataset<Number> var1,TimeseriesDataset<Number> var2)
     {
         return computeFunction(var1, var2,
                 (String p1Str,String p2Str) -> Long.parseLong(p1Str) / Long.parseLong(p2Str),
@@ -78,7 +77,7 @@ public class BasicFunctionsPlugin extends FunctionPluginBase {
 
     }
 
-    public Variable modulus(Variable var1,Variable var2)
+    public TimeseriesDataset<Number> modulus(TimeseriesDataset<Number> var1,TimeseriesDataset<Number> var2)
     {
         return computeFunction(var1, var2,
                 (String p1Str,String p2Str) -> Long.parseLong(p1Str) % Long.parseLong(p2Str),
@@ -87,26 +86,27 @@ public class BasicFunctionsPlugin extends FunctionPluginBase {
 
     }
 
-    public Variable pow(Variable var1,Variable var2)
+    public TimeseriesDataset<Number> pow(TimeseriesDataset<Number> var1,TimeseriesDataset<Number> var2)
     {
-        return null;
 //        return computeFunction(var1, var2,
 //                (String p1Str,String p2Str) -> Math.pow(Long.parseLong(p1Str),  Long.parseLong(p2Str));
 //                (String p1Str,String p2Str) -> Double.parseDouble(
 //                        decimalFormat.format(Math.pow(Double.parseDouble(p1Str),Double.parseDouble(p2Str)))));
 
+        return null;
     }
 
 
 
 
-    private Variable computeFunction(Variable var1, Variable var2,
+    private TimeseriesDataset<Number> computeFunction(TimeseriesDataset<Number> var1, TimeseriesDataset<Number> var2,
                                     BiFunction<String,String,Long> biLongFunction,
                                     BiFunction<String,String,Double> biDoubleFunction)
     {
         TSFunctionEvaluator functionEvaluator = new TSFunctionEvaluator();
-        TimeseriesDataset<Number> output = functionEvaluator.evaluateWithBiNumberFunction(
-                new Variable[]{var1, var2}, (p1, p2) -> {
+        TimeseriesDataset<Number>[] variables =  new TimeseriesDataset[]{var1,var2};
+        return functionEvaluator.evaluateWithBiNumberFunction(
+                variables, (p1, p2) -> {
                     String var1Str = p1.toString();
                     String var2Str = p2.toString();
                     boolean notanInteger = isNotAnInteger(var1Str, var2Str);
@@ -118,9 +118,6 @@ public class BasicFunctionsPlugin extends FunctionPluginBase {
                     }
 
                 }, evaluationConfig);
-        Variable variable = new Variable("out");
-        variable.setValue(output);
-        return variable;
 
     }
 

@@ -2,7 +2,6 @@ package com.tevl.sample;
 
 import com.tevl.ds.TimeseriesDataset;
 import com.tevl.exp.Expression;
-import com.tevl.exp.beans.Variable;
 import com.tevl.exp.eval.context.StandardEvaluationContext;
 
 import java.util.HashMap;
@@ -27,9 +26,8 @@ public class Sample {
         datasetMap.put("A",aVariableDataset);
         datasetMap.put("B",bVariableDataset);
 
-        Variable output = Expression.Builder.instance("#A+(#B+2)").useInMemoryDataSource()
+        TimeseriesDataset<Number> value = Expression.Builder.instance("#A+(#B+2)").useInMemoryDataSource()
                 .withDataSet(datasetMap).evaluate(new StandardEvaluationContext());
-        TimeseriesDataset<Number> value = output.getValue();
 
         LOGGER.info("------------------Input------------------------------------");
         LOGGER.info(""+datasetMap);

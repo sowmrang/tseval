@@ -23,8 +23,6 @@ public class InMemoryDataSource implements DataSource {
         Arrays.stream(parameters).forEach(variable -> {
             datasetMap.put(variable,inputDatasetMap.get(variable));
         });
-
-
         return datasetMap;
     }
 }

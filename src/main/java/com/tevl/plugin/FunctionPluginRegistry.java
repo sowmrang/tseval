@@ -1,7 +1,7 @@
 package com.tevl.plugin;
 
 import com.tevl.exp.eval.EvaluationConfig;
-import com.tevl.plugin.impl.BasicFunctionsPlugin;
+import com.tevl.plugin.impl.ArithmeticFunctionsPlugin;
 import com.tevl.plugin.impl.FunctionPluginBase;
 
 import java.util.LinkedHashMap;
@@ -20,7 +20,7 @@ public class FunctionPluginRegistry {
 
     private FunctionPluginRegistry()
     {
-        registerFunctionPlugin(new BasicFunctionsPlugin());
+        registerFunctionPlugin(new ArithmeticFunctionsPlugin());
     }
 
     public void registerFunctionPlugin(FunctionPlugin functionPlugin)

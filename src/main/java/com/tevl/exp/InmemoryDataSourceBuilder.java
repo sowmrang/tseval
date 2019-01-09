@@ -3,7 +3,6 @@ package com.tevl.exp;
 import com.tevl.datasource.DatasourceProvider;
 import com.tevl.datasource.InMemoryDataSource;
 import com.tevl.ds.TimeseriesDataset;
-import com.tevl.exp.beans.Variable;
 import com.tevl.exp.eval.context.EvaluationContext;
 import com.tevl.exp.eval.context.resolver.DefaultExpressionContextResolver;
 import com.tevl.exp.eval.context.resolver.ExpressionContextResolver;
@@ -34,7 +33,7 @@ public class InmemoryDataSourceBuilder extends ExpressionEvaluatorBuilder {
         return this;
     }
 
-    public Variable evaluate(EvaluationContext evaluationContext)
+    public TimeseriesDataset<Number> evaluate(EvaluationContext evaluationContext)
     {
         SpelExpression spelExpression = new SpelExpression(expressionString);
         InMemoryDataSource dataSource = new InMemoryDataSource();

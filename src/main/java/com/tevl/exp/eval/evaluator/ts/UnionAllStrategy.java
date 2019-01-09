@@ -1,25 +1,23 @@
 package com.tevl.exp.eval.evaluator.ts;
 
 import com.tevl.ds.TimeseriesDataset;
-import com.tevl.exp.beans.Variable;
 
-import java.util.Collections;
 import java.util.function.BiFunction;
 
 public class UnionAllStrategy {
 
-    public TimeseriesDataset<Number> evaluateWithBiNumberFunction(Variable[] inputs,
+    public TimeseriesDataset<Number> evaluateWithBiNumberFunction(TimeseriesDataset<Number>[] inputs,
                                                                   BiFunction<Number,Number,Number> functionPluginMethod)
     {
         TimeseriesDataset<Number> outputDataset =  TimeseriesDataset.Builder.<Number>instance().build();
         Number[] parameterValues = new Number[2];
         for (int i = 0; i < inputs.length; i++) {
-            TimeseriesDataset<Number> tsInput = inputs[i].getValue();
+            TimeseriesDataset<Number> tsInput = inputs[i];
             if(tsInput != null)
             {
                 tsInput.getTimestampSeries().forEach(timestamp -> {
-                    TimeseriesDataset<Number> firstParameterTimeSeries = inputs[0].getValue();
-                    TimeseriesDataset<Number> secondParameterTimeSeries = inputs[1].getValue();
+                    TimeseriesDataset<Number> firstParameterTimeSeries = inputs[0];
+                    TimeseriesDataset<Number> secondParameterTimeSeries = inputs[1];
 
                     parameterValues[0] = (firstParameterTimeSeries == null ||
                             firstParameterTimeSeries.getValue(timestamp) == null) ?
@@ -27,8 +25,6 @@ public class UnionAllStrategy {
                     parameterValues[0] = (secondParameterTimeSeries == null ||
                             secondParameterTimeSeries.getValue(timestamp) == null) ?
                             inputs[1].getDefaultValue() : secondParameterTimeSeries.getValue(timestamp);
-                    System.out.println("parameterValues = " + parameterValues[0]);
-                    System.out.println("parameterValues = " + parameterValues[1]);
                     if(parameterValues[0] != null && parameterValues[1] != null)
                     {
                         outputDataset.addValue(timestamp,

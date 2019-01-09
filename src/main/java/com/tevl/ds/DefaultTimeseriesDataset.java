@@ -1,17 +1,19 @@
 package com.tevl.ds;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 class DefaultTimeseriesDataset<T> implements TimeseriesDataset<T> {
 
-    private final NavigableMap<Long,T> tsDataset = new TreeMap<>();
+    private NavigableMap<Long,T> tsDataset = new TreeMap<>();
+    private T defaultValue;
 
     public DefaultTimeseriesDataset()
     {
+    }
+
+    public DefaultTimeseriesDataset(T defaultValue)
+    {
+        this.defaultValue = defaultValue;
     }
 
     @Override
@@ -31,6 +33,11 @@ class DefaultTimeseriesDataset<T> implements TimeseriesDataset<T> {
     }
 
     @Override
+    public T getDefaultValue() {
+        return defaultValue;
+    }
+
+    @Override
     public Set<Long> getTimestampSeries() {
         return Collections.unmodifiableSet(tsDataset.keySet());
     }
@@ -40,6 +47,8 @@ class DefaultTimeseriesDataset<T> implements TimeseriesDataset<T> {
         return tsDataset.size();
     }
 
+
+
     public String toString()
     {
         StringBuilder outputBuffer = new StringBuilder(100);
@@ -47,5 +56,17 @@ class DefaultTimeseriesDataset<T> implements TimeseriesDataset<T> {
             outputBuffer.append(key).append(" -> ").append(tsDataset.get(key)).append("\n");
         }
         return outputBuffer.toString();
+    }
+
+    @Override
+    public Iterator<Map.Entry<Long,T>> iterator() {
+        return new TSDatasetIterator<>(tsDataset.entrySet().iterator());
+    }
+
+    public TimeseriesDataset<T> subRange(Long startTimestamp, Long endTimestamp) {
+        Map<Long, T> subMap = tsDataset.subMap(startTimestamp, endTimestamp);
+        DefaultTimeseriesDataset<T> subDataset = new DefaultTimeseriesDataset<>();
+        subDataset.tsDataset = new TreeMap<>(subMap);
+        return subDataset;
     }
 }

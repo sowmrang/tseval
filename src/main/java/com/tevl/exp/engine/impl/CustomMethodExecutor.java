@@ -1,5 +1,6 @@
 package com.tevl.exp.engine.impl;
 
+import com.tevl.ds.TimeseriesDataset;
 import com.tevl.exp.beans.Variable;
 import com.tevl.plugin.FunctionPlugin;
 import org.springframework.expression.AccessException;
@@ -33,15 +34,17 @@ public class CustomMethodExecutor implements MethodExecutor {
                 Object argument = arguments[i];
                 if(!(argument instanceof Variable))
                 {
-                    Variable variable = new Variable("const");
+                    TimeseriesDataset<Number> constTSDataset;
                     try {
-                        variable.setDefaultValue(Long.parseLong(argument.toString()));
+                        constTSDataset = TimeseriesDataset.Builder.<Number>instance()
+                                .withDefaultValue(Long.parseLong(argument.toString())).build();
                     }
                     catch (NumberFormatException exc)
                     {
-                        variable.setDefaultValue(Double.parseDouble(argument.toString()));
+                        constTSDataset = TimeseriesDataset.Builder.<Number>instance()
+                                .withDefaultValue(Double.parseDouble(argument.toString())).build();
                     }
-                    arguments[i] = variable;
+                    arguments[i] = constTSDataset;
                 }
             }
             output = method.invoke(functionPlugin,arguments);

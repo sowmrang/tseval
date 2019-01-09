@@ -1,5 +1,7 @@
 package com.tevl.ds;
 
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 //TODO no implementation
@@ -34,5 +36,20 @@ class DownsampledTimeseriesDataset<T> implements TimeseriesDataset<T> {
     @Override
     public int size() {
         return 0;
+    }
+
+    @Override
+    public T getDefaultValue() {
+        return null;
+    }
+
+    @Override
+    public TimeseriesDataset<T> subRange(Long startTimestamp, Long endTimestamp) {
+        return null;
+    }
+
+    @Override
+    public Iterator<Map.Entry<Long,T>> iterator() {
+        return null;
     }
 }

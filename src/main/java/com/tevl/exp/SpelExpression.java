@@ -1,6 +1,8 @@
 package com.tevl.exp;
 
+import com.tevl.ds.TimeseriesDataset;
 import com.tevl.exp.beans.Variable;
+import com.tevl.exp.engine.impl.CustomTypeConverter;
 import com.tevl.exp.engine.impl.SpelOperatorOverloader;
 import com.tevl.exp.engine.impl.SpringElEvaluationContext;
 import com.tevl.exp.eval.context.EvaluationContext;
@@ -26,7 +28,7 @@ public class SpelExpression extends Expression {
     private static final Logger LOGGER = Logger.getLogger(SpelExpression.class.getName());
 
 
-    public SpelExpression(String expressionString)
+    SpelExpression(String expressionString)
     {
         super(expressionString);
 
@@ -69,17 +71,35 @@ public class SpelExpression extends Expression {
     }
 
     @Override
-    public Variable getValue(EvaluationContext evaluationContext) {
+    public TimeseriesDataset<Number> getValue(EvaluationContext evaluationContext) {
         RuntimeBindingContext bindingContext = expressionContextResolver.resolveContext(this, evaluationContext);
         SpringElEvaluationContext springElEvaluationContext = new SpringElEvaluationContext();
         Map<String,Object> bindingVariables = bindingContext.getBindingVariables();
-        bindingVariables.forEach(springElEvaluationContext::setVariable);
+        String variableWithNullValue = null;
+
+        for (String variableName : bindingVariables.keySet()) {
+            TimeseriesDataset<Number> value = ((Variable) bindingVariables.get(variableName)).getValue();
+            if(value == null)
+            {
+                variableWithNullValue = variableName;
+                break;
+            }
+            springElEvaluationContext.setVariable(variableName, value);
+        }
+
+        if(variableWithNullValue != null)
+        {
+            LOGGER.severe("Unable to compute expression. Value of variable "+variableWithNullValue+ " is null");
+            return null;
+        }
+
         springElEvaluationContext.setRootObject(FunctionPluginRegistry.INSTANCE);
         springElEvaluationContext.setOperatorOverloader(
                 new SpelOperatorOverloader(evaluationContext.getEvaluationConfig()));
+        springElEvaluationContext.setTypeConverter(new CustomTypeConverter());
         springElEvaluationContext.setAdditionalContext(evaluationContext);
-        Object value = spelExpression.getValue(springElEvaluationContext);
-        return (Variable) value;
+
+        return (TimeseriesDataset<Number>)spelExpression.getValue(springElEvaluationContext,TimeseriesDataset.class);
     }
 
     @Override

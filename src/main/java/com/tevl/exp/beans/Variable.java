@@ -27,8 +27,6 @@ public class Variable
                 .dataExtrapolation(extrapolate,new CarryForwardStrategy<>()).build();
     }
 
-
-
     public TimeseriesDataset<Number> getValue()
     {
         return value;
@@ -45,4 +43,5 @@ public class Variable
     public void setDefaultValue(Number defaultValue) {
         this.defaultValue = defaultValue;
     }
+
 }

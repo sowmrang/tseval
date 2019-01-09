@@ -1,7 +1,6 @@
 package com.tevl.exp.eval.evaluator.ts;
 
 import com.tevl.ds.TimeseriesDataset;
-import com.tevl.exp.beans.Variable;
 import com.tevl.exp.eval.EvaluationConfig;
 
 import java.util.function.BiFunction;
@@ -12,7 +11,7 @@ public class TSFunctionEvaluator {
     private static final Logger LOGGER = Logger.getLogger(TSFunctionEvaluator.class.getName());
 
     public TimeseriesDataset<Number> evaluateWithBiNumberFunction(
-            Variable[] parametersDataset, BiFunction<Number,Number,Number> method, EvaluationConfig evaluationConfig)
+            TimeseriesDataset<Number>[] parametersDataset, BiFunction<Number,Number,Number> method, EvaluationConfig evaluationConfig)
     {
         //TODO:resolve parameter types
 //        if(functionPlugin instanceof AggregateFunctionPlugin)
@@ -37,9 +36,9 @@ public class TSFunctionEvaluator {
             boolean allVariablesHaveDefaultValues = true;
             boolean variableHasInvalidValue = false;
             for (int i = 0; i < parametersDataset.length; i++) {
-                Variable variable = parametersDataset[i];
+                TimeseriesDataset<Number> variable = parametersDataset[i];
                 allVariablesHaveDefaultValues = allVariablesHaveDefaultValues && variable.getDefaultValue() != null;
-                if(variable.getDefaultValue() == null && variable.getValue() == null)
+                if(variable.getDefaultValue() == null && variable.size() == 0)
                 {
                     variableHasInvalidValue = true;
                     break;
