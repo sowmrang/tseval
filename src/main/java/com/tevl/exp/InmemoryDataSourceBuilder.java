@@ -35,7 +35,7 @@ public class InmemoryDataSourceBuilder extends ExpressionEvaluatorBuilder {
 
     public TimeseriesDataset<Number> evaluate(EvaluationContext evaluationContext)
     {
-        SpelExpression spelExpression = new SpelExpression(expressionString);
+        StandardExpression spelExpression = new StandardExpression(expressionString);
         InMemoryDataSource dataSource = new InMemoryDataSource();
         if(dataset != null)
         {

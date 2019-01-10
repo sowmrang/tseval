@@ -38,11 +38,11 @@ public class SpelExpression extends Expression {
 
 
         SpelNode ast = ((org.springframework.expression.spel.standard.SpelExpression) spelExpression).getAST();
-
         variables = new ArrayList<>();
         findVariablesRecursively(ast, variables);
         LOGGER.info("Found variables in expression : "+variables);
     }
+
 
     private static void findVariablesRecursively(SpelNode ast,List<String> variableNames)
     {

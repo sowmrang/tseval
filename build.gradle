@@ -9,6 +9,7 @@ targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven{ url 'https://jitpack.io'}
 }
 
 dependencies {
@@ -16,6 +17,8 @@ dependencies {
     compile group: 'org.springframework', name: 'spring-expression', version: '5.0.2.RELEASE'
     //TODO remove this dependency
     compile group: 'com.zaxxer', name: 'HikariCP', version: '2.7.8'
+    implementation 'com.github.bkiers:Curta:v1.0.2'
+
 }
 
 task execute(type:JavaExec) {

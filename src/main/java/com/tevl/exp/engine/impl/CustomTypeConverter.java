@@ -12,7 +12,14 @@ public class CustomTypeConverter extends StandardTypeConverter
 {
     @Override
     public boolean canConvert(@Nullable TypeDescriptor sourceType, TypeDescriptor targetType) {
+        if(TimeseriesDataset.class.isAssignableFrom(targetType.getType()) &&
+                List.class.isAssignableFrom(sourceType.getType()))
+        {
+            return true;
+        }
+
         return super.canConvert(sourceType, targetType);
+
     }
 
     @Nullable

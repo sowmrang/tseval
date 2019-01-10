@@ -32,9 +32,9 @@ public class FunctionPluginRegistry {
                 functionPluginMap.put(functionName,descriptor));
     }
 
-    public FunctionPlugin getFunctionPlugin(String pluginName,EvaluationConfig config)
+    public FunctionPlugin getFunctionPlugin(String pluginMethodName,EvaluationConfig config)
     {
-        PluginDescriptor descriptor = functionPluginMap.get(pluginName);
+        PluginDescriptor descriptor = functionPluginMap.get(pluginMethodName);
         String className = descriptor.getClassName();
 
         FunctionPluginBase functionPlugin = null;
@@ -45,6 +45,11 @@ public class FunctionPluginRegistry {
             throw new RuntimeException("Unable to instantiate plugin "+className,e);
         }
         return functionPlugin;
+    }
+
+    public Set<String> getRegisterdPluginMethods()
+    {
+        return functionPluginMap.keySet();
     }
 
 
