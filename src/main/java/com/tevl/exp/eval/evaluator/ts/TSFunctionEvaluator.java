@@ -10,47 +10,39 @@ public class TSFunctionEvaluator {
 
     private static final Logger LOGGER = Logger.getLogger(TSFunctionEvaluator.class.getName());
 
-    public TimeseriesDataset<Number> evaluateWithBiNumberFunction(
-            TimeseriesDataset<Number>[] parametersDataset, BiFunction<Number,Number,Number> method, EvaluationConfig evaluationConfig)
+    public Object evaluateWithBiNumberFunction(
+            Object[] parametersDataset, BiFunction<Number,Number,Number> method, EvaluationConfig evaluationConfig)
     {
-        //TODO:resolve parameter types
-//        if(functionPlugin instanceof AggregateFunctionPlugin)
-//        {
-//            AggregateFunctionPlugin aggregateFunction = (AggregateFunctionPlugin) functionPlugin;
-//            TimeseriesDataset<Number>[] inputs = new TimeseriesDataset[parametersDataset.length];
-//            for (int i = 0; i < parametersDataset.length; i++) {
-//                Variable variable = parametersDataset[i];
-//                inputs[i] = variable.getValue();
-//            }
-//            return aggregateFunction.invoke(evaluationConfig.getAggregationInterval(),inputs);
-//        }
-
-
         boolean extrapolateInputsEnabled = evaluationConfig.isExtrapolateInputsEnabled();
-        if(extrapolateInputsEnabled) {
-            UnionAllStrategy unionAllStrategy = new UnionAllStrategy();
-            return unionAllStrategy.evaluateWithBiNumberFunction(parametersDataset, method);
-        }
-        else {
 
             boolean allVariablesHaveDefaultValues = true;
             boolean variableHasInvalidValue = false;
+            boolean validParameterTypes = false;
             for (int i = 0; i < parametersDataset.length; i++) {
-                TimeseriesDataset<Number> variable = parametersDataset[i];
-                allVariablesHaveDefaultValues = allVariablesHaveDefaultValues && variable.getDefaultValue() != null;
-                if(variable.getDefaultValue() == null && variable.size() == 0)
-                {
-                    variableHasInvalidValue = true;
-                    break;
+                Object parameter = parametersDataset[i];
+                if(parameter instanceof TimeseriesDataset) {
+                    TimeseriesDataset<Number> variable = (TimeseriesDataset<Number>) parameter;
+                    allVariablesHaveDefaultValues = allVariablesHaveDefaultValues && variable.getDefaultValue() != null;
+                    if (variable.getDefaultValue() == null && variable.size() == 0) {
+                        variableHasInvalidValue = true;
+                        break;
+                    }
                 }
+                validParameterTypes = validParameterTypes || (parameter instanceof TimeseriesDataset);
             }
             if(variableHasInvalidValue)
             {
-                LOGGER.info("One of the variables has neither valid value nor is a constant. " +
+                LOGGER.info("One of the variables  neither has a valid value nor is a constant. " +
                         "Cannot evaluate the expression");
                 return TimeseriesDataset.Builder.<Number>instance().build();
             }
-            if(allVariablesHaveDefaultValues)
+            if(!validParameterTypes)
+            {
+                LOGGER.severe("Invalid parameter types passed in expression. One of the parameters must be " +
+                        "of type TimeseriesDataset");
+                throw new RuntimeException("Cannot compute the expression ");
+            }
+            if(allVariablesHaveDefaultValues || extrapolateInputsEnabled)
             {
                 LOGGER.info("Using union all strategy to evaluate expression");
                 UnionAllStrategy unionAllStrategy = new UnionAllStrategy();
@@ -61,7 +53,6 @@ public class TSFunctionEvaluator {
                 DefaultStrategy defaultStrategy = new DefaultStrategy();
                 return defaultStrategy.evaluateWithNumberFunction(parametersDataset, method);
             }
-        }
     }
 
 

@@ -3,6 +3,7 @@ package com.tevl.exp;
 import com.tevl.datasource.DatasourceProvider;
 import com.tevl.datasource.InMemoryDataSource;
 import com.tevl.ds.TimeseriesDataset;
+import com.tevl.ds.strategy.CarryForwardStrategy;
 import com.tevl.exp.beans.Variable;
 import com.tevl.exp.eval.EvaluationConfig;
 import com.tevl.exp.eval.context.EvaluationContext;
@@ -20,7 +21,7 @@ public class TestSpelExpression {
 
     @Test
     public void testBasicExpression() {
-        String expression = "#A+2";
+        String expression = "A+2";
 
         Map<Long,Number> expectedDatasetMap = new LinkedHashMap<>();
 
@@ -66,7 +67,7 @@ public class TestSpelExpression {
 
     @Test
     public void testMissingExpression() {
-        String expression = "#X+2";
+        String expression = "X+2";
         EvaluationContext evaluationContext = new StandardEvaluationContext();
 
         TimeseriesDataset<Number> value = Expression.Builder.instance(expression)
@@ -76,9 +77,7 @@ public class TestSpelExpression {
 
     @Test
     public void testMultiply() {
-        String expression = "#A*(#B*100)";
-        SpelExpression spelExpression = new SpelExpression(expression);
-        EvaluationContext evaluationContext = new StandardEvaluationContext();
+        String expression = "A*(B*100)";
 
         InMemoryDataSource dataSource = new InMemoryDataSource();
         Map<Long,Number> aVariableDataset = new LinkedHashMap<>();
@@ -113,7 +112,7 @@ public class TestSpelExpression {
 
     @Test
     public void testTwoVariableFunctionExpression() {
-        String expression = "#A+#B";
+        String expression = "A+B";
 
         Map<Long,Number> expectedDatasetMap = new LinkedHashMap<>();
 
@@ -168,10 +167,8 @@ public class TestSpelExpression {
     }
 
     @Test
-    @Ignore("Test case is failing")
     public void testTwoVariableExpressionWithExtrapolation() {
-        String expression = "#A+#B";
-        SpelExpression spelExpression = new SpelExpression(expression);
+        String expression = "A + B";
         EvaluationContext evaluationContext = new StandardEvaluationContext();
         EvaluationConfig evaluationConfig = new EvaluationConfig();
         evaluationConfig.setExtrapolateInputsEnabled(true);
@@ -196,30 +193,27 @@ public class TestSpelExpression {
 
         Map<String, TimeseriesDataset<Number>> datasetMap = new LinkedHashMap<>();
         datasetMap.put("A", TimeseriesDataset.Builder.<Number>instance()
-                .withDataset(aVariableDataset).build());
+                .withDataset(aVariableDataset).dataExtrapolation(true,new CarryForwardStrategy<>()).build());
         datasetMap.put("B", TimeseriesDataset.Builder.<Number>instance()
-                .withDataset(bVariableDataset).build());
+                .withDataset(bVariableDataset).dataExtrapolation(true, new CarryForwardStrategy<>()).build());
         dataSource.setDataMap(datasetMap);
 
-        DatasourceProvider datasourceProvider = new DatasourceProvider(dataSource, dataSource);
-        ExpressionContextResolver contextResolver = new DefaultExpressionContextResolver(datasourceProvider);
-
         Map<Long,Number> expectedDatasetMap = new LinkedHashMap<>();
-        expectedDatasetMap.put(1546626611976L, 1.715809328);
-        expectedDatasetMap.put(1546626611977L, 1.225377956);
-        expectedDatasetMap.put(1546626611978L, 1.622258966);
-        expectedDatasetMap.put(1546626611979L, 1.535278545);
-        expectedDatasetMap.put(1546626611980L, 1.582386818);
-        expectedDatasetMap.put(1546626611981L, 1.31805994);
-        expectedDatasetMap.put(1546626611982L, 1.370030725);
-        expectedDatasetMap.put(1546626611983L, 1.864024058);
-        expectedDatasetMap.put(1546626611984L, 1.758365036);
+        expectedDatasetMap.put(1546626611976L, 1.715809);
+        expectedDatasetMap.put(1546626611977L, 1.225378);
+        expectedDatasetMap.put(1546626611978L, 1.622259);
+        expectedDatasetMap.put(1546626611979L, 1.535279);
+        expectedDatasetMap.put(1546626611980L, 1.582387);
+        expectedDatasetMap.put(1546626611981L, 1.31806);
+        expectedDatasetMap.put(1546626611982L, 1.370031);
+        expectedDatasetMap.put(1546626611983L, 1.864024);
+        expectedDatasetMap.put(1546626611984L, 1.758365);
         TimeseriesDataset<Number> expectedDataset = TimeseriesDataset.Builder.<Number>instance()
                 .withDataset(expectedDatasetMap).build();
 
 
-        spelExpression.setExpressionContextResolver(contextResolver);
-        TimeseriesDataset<Number> outputDataset = spelExpression.getValue(evaluationContext);
+        TimeseriesDataset<Number> outputDataset = Expression.Builder.instance(expression).useInMemoryDataSource()
+                .withDataSet(datasetMap).evaluate(evaluationContext);
 
         System.out.println("outputDataset = " + outputDataset);
         System.out.println("expectedDataset = " + expectedDataset);

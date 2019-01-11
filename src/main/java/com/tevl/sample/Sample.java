@@ -26,7 +26,7 @@ public class Sample {
         datasetMap.put("A",aVariableDataset);
         datasetMap.put("B",bVariableDataset);
 
-        TimeseriesDataset<Number> value = Expression.Builder.instance("A % B").useInMemoryDataSource()
+        TimeseriesDataset<Number> value = Expression.Builder.instance("(A * B) * 200").useInMemoryDataSource()
                 .withDataSet(datasetMap).evaluate(new StandardEvaluationContext());
 
         LOGGER.info("------------------Input------------------------------------");

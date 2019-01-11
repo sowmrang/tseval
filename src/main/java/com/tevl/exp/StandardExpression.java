@@ -17,7 +17,7 @@ public class StandardExpression extends Expression {
     private List<String> variables;
     private ExpressionContextResolver expressionContextResolver;
 
-    private static final Logger LOGGER = Logger.getLogger(SpelExpression.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(StandardExpression.class.getName());
 
 
     StandardExpression(String expressionString) {

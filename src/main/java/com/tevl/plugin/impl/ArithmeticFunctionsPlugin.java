@@ -22,18 +22,18 @@ public class ArithmeticFunctionsPlugin extends FunctionPluginBase {
         PluginDescriptor descriptor = new PluginDescriptor(ArithmeticFunctionsPlugin.class.getName());
         Map<String,Method> functions = new HashMap<>();
         try {
-            Method add = ArithmeticFunctionsPlugin.class.getMethod("add", TimeseriesDataset.class, TimeseriesDataset.class);
+            Method add = ArithmeticFunctionsPlugin.class.getMethod("add", Object.class, Object.class);
             functions.put(add.getName(),add);
-            Method subtract = ArithmeticFunctionsPlugin.class.getMethod("subtract", TimeseriesDataset.class, TimeseriesDataset.class);
+            Method subtract = ArithmeticFunctionsPlugin.class.getMethod("subtract", Object.class, Object.class);
             functions.put(subtract.getName(),subtract);
-            Method multiply = ArithmeticFunctionsPlugin.class.getMethod("multiply", TimeseriesDataset.class, TimeseriesDataset.class);
+            Method multiply = ArithmeticFunctionsPlugin.class.getMethod("multiply", Object.class, Object.class);
             functions.put(multiply.getName(),multiply);
-            Method divide = ArithmeticFunctionsPlugin.class.getMethod("divide", TimeseriesDataset.class, TimeseriesDataset.class);
+            Method divide = ArithmeticFunctionsPlugin.class.getMethod("divide", Object.class, Object.class);
             functions.put(divide.getName(),divide);
-            Method modulus = ArithmeticFunctionsPlugin.class.getMethod("modulus", TimeseriesDataset.class, TimeseriesDataset.class);
-            functions.put(divide.getName(),modulus);
-            Method pow = ArithmeticFunctionsPlugin.class.getMethod("pow", TimeseriesDataset.class, TimeseriesDataset.class);
-            functions.put(divide.getName(),pow);
+            Method modulus = ArithmeticFunctionsPlugin.class.getMethod("modulus", Object.class, Object.class);
+            functions.put(modulus.getName(),modulus);
+            Method pow = ArithmeticFunctionsPlugin.class.getMethod("pow", Object.class, Object.class);
+            functions.put(pow.getName(),pow);
             descriptor.setPluginName("basics");
             descriptor.setSupportedFunctions(functions);
         } catch (NoSuchMethodException e) {
@@ -42,15 +42,16 @@ public class ArithmeticFunctionsPlugin extends FunctionPluginBase {
         return descriptor;
     }
 
-    public TimeseriesDataset<Number> add(TimeseriesDataset<Number> var1,TimeseriesDataset<Number> var2)
+    public Object add(Object var1,Object var2)
     {
+        
         return computeFunction(var1, var2,
                 (String p1Str,String p2Str) -> Long.parseLong(p1Str) + Long.parseLong(p2Str),
                 (String p1Str,String p2Str) -> Double.parseDouble(
                         decimalFormat.format(Double.parseDouble(p1Str) + Double.parseDouble(p2Str))));
     }
 
-    public TimeseriesDataset<Number> multiply(TimeseriesDataset<Number> var1,TimeseriesDataset<Number> var2)
+    public Object multiply(Object var1,Object var2)
     {
         return computeFunction(var1, var2,
                 (String p1Str,String p2Str) -> Long.parseLong(p1Str) * Long.parseLong(p2Str),
@@ -59,7 +60,7 @@ public class ArithmeticFunctionsPlugin extends FunctionPluginBase {
 
     }
 
-    public TimeseriesDataset<Number> subtract(TimeseriesDataset<Number> var1,TimeseriesDataset<Number> var2)
+    public Object subtract(Object var1,Object var2)
     {
         return computeFunction(var1, var2,
                 (String p1Str,String p2Str) -> Long.parseLong(p1Str) - Long.parseLong(p2Str),
@@ -68,7 +69,7 @@ public class ArithmeticFunctionsPlugin extends FunctionPluginBase {
 
     }
 
-    public TimeseriesDataset<Number> divide(TimeseriesDataset<Number> var1,TimeseriesDataset<Number> var2)
+    public Object divide(Object var1,Object var2)
     {
         return computeFunction(var1, var2,
                 (String p1Str,String p2Str) -> Long.parseLong(p1Str) / Long.parseLong(p2Str),
@@ -77,7 +78,7 @@ public class ArithmeticFunctionsPlugin extends FunctionPluginBase {
 
     }
 
-    public TimeseriesDataset<Number> modulus(TimeseriesDataset<Number> var1,TimeseriesDataset<Number> var2)
+    public Object modulus(Object var1,Object var2)
     {
         return computeFunction(var1, var2,
                 (String p1Str,String p2Str) -> Long.parseLong(p1Str) % Long.parseLong(p2Str),
@@ -86,7 +87,7 @@ public class ArithmeticFunctionsPlugin extends FunctionPluginBase {
 
     }
 
-    public TimeseriesDataset<Number> pow(TimeseriesDataset<Number> var1,TimeseriesDataset<Number> var2)
+    public Object pow(Object var1,Object var2)
     {
 //        return computeFunction(var1, var2,
 //                (String p1Str,String p2Str) -> Math.pow(Long.parseLong(p1Str),  Long.parseLong(p2Str));
@@ -99,12 +100,12 @@ public class ArithmeticFunctionsPlugin extends FunctionPluginBase {
 
 
 
-    private TimeseriesDataset<Number> computeFunction(TimeseriesDataset<Number> var1, TimeseriesDataset<Number> var2,
+    private Object computeFunction(Object var1, Object var2,
                                     BiFunction<String,String,Long> biLongFunction,
                                     BiFunction<String,String,Double> biDoubleFunction)
     {
         TSFunctionEvaluator functionEvaluator = new TSFunctionEvaluator();
-        TimeseriesDataset<Number>[] variables =  new TimeseriesDataset[]{var1,var2};
+        Object[] variables =  new Object[]{var1,var2};
         return functionEvaluator.evaluateWithBiNumberFunction(
                 variables, (p1, p2) -> {
                     String var1Str = p1.toString();
