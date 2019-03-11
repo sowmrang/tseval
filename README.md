@@ -1,4 +1,5 @@
 *WIP*
+
 # Project Title
 
 An expression evaluator that can evaluate time series datasets
@@ -54,7 +55,7 @@ Expression.Builder.instance("#A+(#B+2)").useJdbcDataSource();
 ````
 
 EvaluationContext holds the configuration defined around the expression. It's possible to evaluate an expression using following strategies:
-1. Extrapolate missing value - Currently, LAST function which would return previous value is being used for extrapolation. (WIP)
+1. Extrapolate missing value - Currently, LAST function which would return previous value is being used for extrapolation. 
 2. Downsample values to nearest time interval (WIP)
 
 Output time series dataset would vary based on the configuration passed to the EvaluationContext. 
