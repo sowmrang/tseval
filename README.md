@@ -1,4 +1,4 @@
-# Project Title
+# Time series Expression Evaluator (tseval)
 
 An expression evaluator that can evaluate time series datasets
 
