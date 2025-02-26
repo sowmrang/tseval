@@ -1,5 +1,3 @@
-*WIP*
-
 # Project Title
 
 An expression evaluator that can evaluate time series datasets
